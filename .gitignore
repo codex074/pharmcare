@@ -1,0 +1,40 @@
+# dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# Next.js / build output
+.next/
+out/
+build/
+dist/
+*.tsbuildinfo
+next-env.d.ts
+
+# env — real secrets never enter the repo
+.env
+.env.*
+!.env.example
+
+# infra runbooks: IPs, hostnames, tunnel details (same policy as pharmshift)
+deploy/
+
+# local-only agent notes
+CLAUDE.md
+AGENTS.md
+
+# patient data must never be committed
+*.csv
+*.sql.gz
+*.dump
+*.backup
+dumps/
+exports/
+
+# misc
+.DS_Store
+*.log
+npm-debug.log*
+coverage/
+.vscode/
+.idea/
