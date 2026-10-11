@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="th"><head>
+<meta charset="utf-8">
+<title>ฟอร์ม Visit · PharmCare OPD</title>
+<link rel="stylesheet" href="../theme.css">
+</head>
+<body>
+<x-dc>
+
+<div class="pc panel {{themeClass}}" style="width: 100%; min-height: 100%">
+  <div class="panel-hd">
+    <span class="care-ic"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12h4l3-8 4 16 3-8h4"></path></svg></span>
+    <div style="flex: 1; min-width: 0; display: flex; flex-direction: column">
+      <h2 class="h2">ติดตามโรคเรื้อรัง (Visit)</h2>
+      <span class="muted xs">นายสมมติ ทดสอบ · <span class="mono">HN 6900001</span> · คลินิกเบาหวาน</span>
+    </div>
+    <button type="button" class="btn btn-ic btn-sm" aria-label="ปิดแผง" style="width: 40px"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"></path></svg></button>
+  </div>
+
+  <div class="sec">
+    <div style="display: flex; align-items: center; justify-content: space-between; gap: 10px">
+      <span class="sec-t"><span class="step-n">1</span>ค่าแล็บ</span>
+      <button type="button" class="btn btn-sm"><svg class="ic ic-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 11a8 8 0 0 0-14.9-3M4 4v4h4M4 13a8 8 0 0 0 14.9 3M20 20v-4h-4"></path></svg>ดึงจาก HIS</button>
+    </div>
+    <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px">
+      <div class="field"><label class="label" for="sbp">SBP</label><div class="unit"><input id="sbp" value="128" inputmode="numeric"><span>mmHg</span></div></div>
+      <div class="field"><label class="label" for="dbp">DBP</label><div class="unit"><input id="dbp" value="78" inputmode="numeric"><span>mmHg</span></div></div>
+      <div class="field"><label class="label" for="fbs">FBS</label><div class="unit"><input id="fbs" value="142" inputmode="numeric"><span>mg/dL</span></div></div>
+      <div class="field"><label class="label" for="a1c">HbA1c</label><div class="unit" style="border-color: var(--dan-bd)"><input id="a1c" value="7.8" inputmode="decimal"><span>%</span></div></div>
+      <div class="field"><label class="label" for="ldl">LDL</label><div class="unit"><input id="ldl" value="92" inputmode="numeric"><span>mg/dL</span></div></div>
+      <div class="field"><label class="label" for="scr">SCr</label><div class="unit"><input id="scr" value="1.24" inputmode="decimal"><span>mg/dL</span></div></div>
+    </div>
+    <div style="display: flex; gap: 8px; flex-wrap: wrap">
+      <span class="chip info">eGFR (CKD-EPI) 58 mL/min/1.73m²</span>
+      <span class="chip bad">HbA1c สูงกว่าเป้า</span>
+    </div>
+  </div>
+
+  <div class="sec">
+    <span class="sec-t"><span class="step-n">2</span>ความร่วมมือในการใช้ยา</span>
+    <div style="display: flex; align-items: center; gap: 14px">
+      <div class="unit" style="width: 120px"><input aria-label="ความร่วมมือ เปอร์เซ็นต์" value="85" inputmode="numeric" style="font-size: 18px"><span>%</span></div>
+      <div style="flex: 1; display: flex; flex-direction: column; gap: 4px">
+        <div class="bar"><div style="width: 85%"></div></div>
+        <div class="xs faint" style="display: flex; justify-content: space-between"><span>0</span><span>เกณฑ์ดี ≥ 80%</span><span>100</span></div>
+      </div>
+    </div>
+    <span class="label">วิธีประเมิน (เลือกได้หลายข้อ)</span>
+    <div style="display: flex; gap: 8px; flex-wrap: wrap">
+      <button type="button" class="opt" aria-pressed="false" style="min-height: 40px">นับเม็ดยา</button>
+      <button type="button" class="opt on" aria-pressed="true" style="min-height: 40px">สอบถามผู้ป่วย</button>
+      <button type="button" class="opt on" aria-pressed="true" style="min-height: 40px">ตรวจปากกา / ยาเหลือ</button>
+      <button type="button" class="opt" aria-pressed="false" style="min-height: 40px">แบบประเมิน MMAS-8</button>
+    </div>
+  </div>
+
+  <div class="sec">
+    <div style="display: flex; align-items: center; justify-content: space-between; gap: 10px">
+      <span class="sec-t"><span class="step-n">3</span>รายการยาที่ใช้จริง</span>
+      <span class="chip warn" style="font-size: 12px">ไม่ตรง 2 รายการ</span>
+    </div>
+    <div class="scroll-x" style="border: 1px solid var(--line); border-radius: 14px">
+      <sc-raw-table class="tbl" style="font-size: 13.5px; min-width: 460px">
+        <sc-raw-thead><sc-raw-tr><sc-raw-th>ยา</sc-raw-th><sc-raw-th>แพทย์สั่ง</sc-raw-th><sc-raw-th>ใช้จริง</sc-raw-th><sc-raw-th>สถานะ</sc-raw-th></sc-raw-tr></sc-raw-thead>
+        <sc-raw-tbody>
+          <sc-raw-tr><sc-raw-td style="font-weight: 600">Metformin 500 mg</sc-raw-td><sc-raw-td class="muted">2×2 pc</sc-raw-td><sc-raw-td>2×2 pc</sc-raw-td><sc-raw-td><span class="chip ok" style="font-size: 11.5px; padding: 1px 8px">ตรง</span></sc-raw-td></sc-raw-tr>
+          <sc-raw-tr style="background: var(--warn-bg)"><sc-raw-td style="font-weight: 600">Insulin glargine</sc-raw-td><sc-raw-td class="muted">18 u hs</sc-raw-td><sc-raw-td style="font-weight: 600">16 u hs</sc-raw-td><sc-raw-td><span class="chip warn" style="font-size: 11.5px; padding: 1px 8px">ไม่ตรง</span></sc-raw-td></sc-raw-tr>
+          <sc-raw-tr><sc-raw-td style="font-weight: 600">Simvastatin 20 mg</sc-raw-td><sc-raw-td class="muted">1 hs</sc-raw-td><sc-raw-td>1 hs</sc-raw-td><sc-raw-td><span class="chip ok" style="font-size: 11.5px; padding: 1px 8px">ตรง</span></sc-raw-td></sc-raw-tr>
+          <sc-raw-tr><sc-raw-td style="font-weight: 600">Amlodipine 10 mg</sc-raw-td><sc-raw-td class="muted">1×1 pc</sc-raw-td><sc-raw-td>1×1 pc</sc-raw-td><sc-raw-td><span class="chip ok" style="font-size: 11.5px; padding: 1px 8px">ตรง</span></sc-raw-td></sc-raw-tr>
+          <sc-raw-tr style="background: var(--warn-bg)"><sc-raw-td style="font-weight: 600">Losartan 50 mg</sc-raw-td><sc-raw-td class="muted">1×1 pc</sc-raw-td><sc-raw-td style="font-weight: 600">ลืม 2 วัน/สัปดาห์</sc-raw-td><sc-raw-td><span class="chip warn" style="font-size: 11.5px; padding: 1px 8px">ไม่ตรง</span></sc-raw-td></sc-raw-tr>
+          <sc-raw-tr><sc-raw-td style="font-weight: 600">Warfarin 3 mg</sc-raw-td><sc-raw-td class="muted">ตามตาราง</sc-raw-td><sc-raw-td>ตามตาราง</sc-raw-td><sc-raw-td><span class="chip ok" style="font-size: 11.5px; padding: 1px 8px">ตรง</span></sc-raw-td></sc-raw-tr>
+        </sc-raw-tbody>
+      </sc-raw-table>
+    </div>
+    <button type="button" class="btn btn-sm" style="align-self: flex-start"><svg class="ic ic-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg>เพิ่มรายการยา</button>
+  </div>
+
+  <div class="sec">
+    <span class="sec-t"><span class="step-n">4</span>SOAP</span>
+    <div class="field"><label class="label" for="s">S — Subjective</label><textarea id="s" class="input">ลืมฉีดอินซูลินก่อนนอนลดลงเหลือ 1 ครั้ง/สัปดาห์ หลังตั้งเตือนในโทรศัพท์ ไม่มีอาการน้ำตาลต่ำ</textarea></div>
+    <div class="field"><label class="label" for="o">O — Objective</label><textarea id="o" class="input">HbA1c 7.8% (ก.ค. 7.6%) · FBS 142 · BP 128/78 · ฉีด glargine จริง 16 u (สั่ง 18 u)</textarea></div>
+    <div class="field"><label class="label" for="a">A — Assessment</label><textarea id="a" class="input">ควบคุมน้ำตาลยังไม่ถึงเป้า สาเหตุหลักจากใช้ขนาดยาต่ำกว่าที่สั่ง</textarea></div>
+    <div class="field"><label class="label" for="p">P — Plan</label><textarea id="p" class="input">ทวนเทคนิคการหมุนขนาดยา · แจ้งแพทย์พิจารณาขนาด glargine · ติดตาม HbA1c ครั้งหน้า</textarea></div>
+  </div>
+
+  <div style="flex: 1"></div>
+  <div class="panel-ft" style="position: sticky; bottom: 0">
+    <button type="button" class="btn">ยกเลิก</button>
+    <button type="button" class="btn btn-pri" style="flex: 1; max-width: 220px">บันทึก Visit</button>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script="" data-props="{&quot;theme&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;light&quot;,&quot;dark&quot;],&quot;default&quot;:&quot;light&quot;},&quot;$preview&quot;:{&quot;width&quot;:520,&quot;height&quot;:1800}}">
+class Component extends DCLogic {
+  renderVals() {
+    const theme = this.props.theme ?? 'light';
+    return { themeClass: theme === 'dark' ? 'dark' : '' };
+  }
+}
+</script>
+
+
+</body></html>

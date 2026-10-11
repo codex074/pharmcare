@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="th"><head>
+<meta charset="utf-8">
+<title>เมนู drawer มือถือ · PharmCare OPD</title>
+<link rel="stylesheet" href="../theme.css">
+</head>
+<body>
+<x-dc>
+
+<div style="width: 390px; height: 844px">
+  <dc-import name="MSearch" drawer="{{true}}" theme="{{theme}}" hint-size="390px,844px"></dc-import>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script="" data-props="{&quot;theme&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;light&quot;,&quot;dark&quot;],&quot;default&quot;:&quot;light&quot;},&quot;$preview&quot;:{&quot;width&quot;:390,&quot;height&quot;:844}}">
+class Component extends DCLogic {
+  renderVals() {
+    return { theme: this.props.theme ?? 'light' };
+  }
+}
+</script>
+
+
+</body></html>

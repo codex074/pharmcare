@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="th"><head>
+<meta charset="utf-8">
+<title>สอนเทคนิค แผงขวา · PharmCare OPD</title>
+<link rel="stylesheet" href="../theme.css">
+</head>
+<body>
+<x-dc>
+
+<div class="pc {{themeClass}}" style="width: 1440px; height: 1000px; position: relative; overflow: hidden">
+  <div style="position: absolute; inset: 0; overflow: hidden" aria-hidden="true">
+    <dc-import name="Patient" theme="{{theme}}" hint-size="100%,1640px"></dc-import>
+  </div>
+  <div style="position: absolute; inset: 0; background: var(--scrim)"></div>
+  <div role="dialog" aria-label="สอนเทคนิคการใช้ยา" style="position: absolute; top: 0; right: 0; bottom: 0; width: 520px; overflow-y: auto; box-shadow: -24px 0 48px -24px rgba(15,23,42,.35)">
+    <dc-import name="FormTechnique" theme="{{theme}}" hint-size="100%,1300px"></dc-import>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script="" data-props="{&quot;theme&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;light&quot;,&quot;dark&quot;],&quot;default&quot;:&quot;light&quot;},&quot;$preview&quot;:{&quot;width&quot;:1440,&quot;height&quot;:1000}}">
+class Component extends DCLogic {
+  renderVals() {
+    const theme = this.props.theme ?? 'light';
+    return { theme, themeClass: theme === 'dark' ? 'dark' : '' };
+  }
+}
+</script>
+
+
+</body></html>

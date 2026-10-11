@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="th"><head>
+<meta charset="utf-8">
+<title>เข้าสู่ระบบ · PharmCare OPD</title>
+<link rel="stylesheet" href="../theme.css">
+</head>
+<body>
+<x-dc>
+
+<div class="pc {{themeClass}}" style="min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 40px 16px">
+  <div style="width: 100%; max-width: 420px; display: flex; flex-direction: column; gap: 22px">
+    <div style="display: flex; flex-direction: column; align-items: center; gap: 12px; text-align: center">
+      <img src="d96bc279-fb49-4c9f-9852-3a8383e85d56" alt="โลโก้โรงพยาบาลอุตรดิตถ์" style="width: 104px; height: 104px; object-fit: contain; background: #ffffff; border-radius: 50%; padding: 2px; box-shadow: var(--shadow)">
+      <div style="display: flex; flex-direction: column; gap: 2px">
+        <h1 style="font-size: 26px; font-weight: 700; color: var(--h)">PharmCare OPD</h1>
+        <p class="muted">งานบริบาลเภสัชกรรมผู้ป่วยนอก · โรงพยาบาลอุตรดิตถ์</p>
+      </div>
+    </div>
+
+    <form class="card" style="padding: 28px; display: flex; flex-direction: column; gap: 18px">
+      <h2 class="h2">เข้าสู่ระบบ</h2>
+
+      <sc-if value="{{showError}}" hint-placeholder-val="{{ true }}">
+        <div class="band dan" role="alert" style="align-items: flex-start; font-size: 14px">
+          <svg class="ic" viewBox="0 0 24 24" aria-hidden="true" style="margin-top: 1px"><circle cx="12" cy="12" r="9"></circle><path d="M12 8v5M12 16v.01"></path></svg>
+          <span>บัญชีนี้ไม่มีสิทธิ์เข้าระบบ (เฉพาะเภสัชกร)</span>
+        </div>
+      </sc-if>
+
+      <div class="field">
+        <label class="label" for="uid">รหัสผู้ใช้ (pha_id)</label>
+        <input id="uid" class="input {{errClass}}" value="tech042" autocomplete="username">
+      </div>
+      <div class="field">
+        <label class="label" for="pw">รหัสผ่าน</label>
+        <input id="pw" class="input {{errClass}}" type="password" value="password" autocomplete="current-password">
+      </div>
+
+      <button type="button" class="btn btn-pri" style="width: 100%; min-height: 48px; font-size: 16px" sc-camel-on-click="{{submit}}">เข้าสู่ระบบ</button>
+
+      <p class="muted sm" style="display: flex; align-items: center; gap: 8px; justify-content: center">
+        <svg class="ic ic-sm" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 11v5M12 8v.01"></path></svg>
+        ใช้บัญชีเดียวกับ PharmShift
+      </p>
+    </form>
+    <p class="faint xs" style="text-align: center">กลุ่มงานเภสัชกรรม โรงพยาบาลอุตรดิตถ์</p>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script="" data-props="{&quot;theme&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;light&quot;,&quot;dark&quot;],&quot;default&quot;:&quot;light&quot;},&quot;error&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true},&quot;$preview&quot;:{&quot;width&quot;:1440,&quot;height&quot;:900}}">
+class Component extends DCLogic {
+  constructor(p) { super(p); this.state = { toggled: null }; }
+  renderVals() {
+    const theme = this.props.theme ?? 'light';
+    const base = this.props.error ?? true;
+    const showError = this.state.toggled === null ? base : this.state.toggled;
+    return {
+      themeClass: theme === 'dark' ? 'dark' : '',
+      showError,
+      errClass: showError ? 'err' : '',
+      submit: () => this.setState({ toggled: !showError })
+    };
+  }
+}
+</script>
+
+
+</body></html>

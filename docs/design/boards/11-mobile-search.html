@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="th"><head>
+<meta charset="utf-8">
+<title>ค้นหาผู้ป่วย มือถือ · PharmCare OPD</title>
+<link rel="stylesheet" href="../theme.css">
+</head>
+<body>
+<x-dc>
+
+<div class="pc {{themeClass}}" style="width: 390px; height: 844px; position: relative; overflow: hidden; display: flex; flex-direction: column">
+  <header class="hdr" style="padding: 0 12px; gap: 10px; flex-wrap: nowrap; flex: none; position: relative; z-index: 2">
+    <button type="button" class="btn btn-ic" aria-label="เปิดเมนู" sc-camel-on-click="{{openDrawer}}" style="border-color: transparent; background: transparent"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true" style="width: 24px; height: 24px"><path d="M4 7h16M4 12h16M4 17h16"></path></svg></button>
+    <div style="flex: 1; min-width: 0; display: flex; flex-direction: column; line-height: 1.25">
+      <h1 class="h1" style="font-size: 17px">ค้นหาผู้ป่วย</h1>
+      <span class="muted xs">จ. 12 ต.ค. 2569</span>
+    </div>
+    <span class="avatar sm" style="width: 36px; height: 36px">สจ</span>
+  </header>
+
+  <div style="flex: 1; overflow-y: auto; padding: 18px 16px 28px; display: flex; flex-direction: column; gap: 18px">
+    <section class="card" style="padding: 16px; display: flex; flex-direction: column; gap: 12px">
+      <label for="mhn" class="label">HN ผู้ป่วย</label>
+      <div style="display: flex; gap: 8px">
+        <input id="mhn" class="input" inputmode="numeric" value="6900001" style="min-height: 56px; font-size: 24px; font-weight: 600; letter-spacing: .05em; font-variant-numeric: tabular-nums">
+        <button type="button" class="btn btn-ic" aria-label="สแกนบาร์โค้ด" style="width: 56px; min-height: 56px; flex: none"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true" style="width: 24px; height: 24px"><path d="M4 7V5a1 1 0 0 1 1-1h2M17 4h2a1 1 0 0 1 1 1v2M20 17v2a1 1 0 0 1-1 1h-2M7 20H5a1 1 0 0 1-1-1v-2M8 8v8M11 8v8M14 8v5M17 8v8"></path></svg></button>
+      </div>
+      <a class="btn btn-pri" href="MPatient.dc.html" style="min-height: 50px; font-size: 16px"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path></svg>ค้นหา</a>
+    </section>
+
+    <section class="card">
+      <div class="card-hd" style="padding: 14px 16px">
+        <div style="display: flex; align-items: center; gap: 8px"><h2 class="h2">บริบาลวันนี้</h2><span class="chip" style="font-size: 12px; padding: 2px 9px">5 ราย</span></div>
+        <a class="sm" href="#" style="font-weight: 600; text-decoration: none">ทั้งหมด</a>
+      </div>
+      <sc-for list="{{today}}" as="p" hint-placeholder-count="4">
+        <a class="row" href="MPatient.dc.html" style="padding: 12px 16px; gap: 12px">
+          <span class="avatar sm" style="width: 36px; height: 36px">{{p.ini}}</span>
+          <span style="flex: 1; min-width: 0; display: flex; flex-direction: column">
+            <span style="font-weight: 600; font-size: 14.5px">{{p.name}}</span>
+            <span class="muted xs"><span class="mono">{{p.hn}}</span> · {{p.clinic}}</span>
+          </span>
+          <span class="chip {{p.c}}" style="font-size: 11.5px; padding: 2px 8px">{{p.tag}}</span>
+        </a>
+      </sc-for>
+    </section>
+
+    <section class="card">
+      <div class="card-hd" style="padding: 14px 16px">
+        <div style="display: flex; align-items: center; gap: 8px"><h2 class="h2">DRP ที่ยังค้าง</h2><span class="chip warn" style="font-size: 12px; padding: 2px 9px">3</span></div>
+      </div>
+      <sc-for list="{{drps}}" as="d" hint-placeholder-count="3">
+        <a class="row" href="MPatient.dc.html" style="padding: 12px 16px; align-items: flex-start; gap: 12px">
+          <span class="tag" style="margin-top: 3px">{{d.sev}}</span>
+          <span style="flex: 1; min-width: 0; display: flex; flex-direction: column">
+            <span style="font-weight: 600; font-size: 14.5px">{{d.type}}</span>
+            <span class="muted xs">{{d.name}} · {{d.age}}</span>
+          </span>
+        </a>
+      </sc-for>
+    </section>
+  </div>
+
+  <sc-if value="{{drawer}}" hint-placeholder-val="{{ false }}">
+    <div style="position: absolute; inset: 0; z-index: 5">
+      <button type="button" aria-label="ปิดเมนู" sc-camel-on-click="{{closeDrawer}}" style="position: absolute; inset: 0; border: 0; background: var(--scrim); cursor: pointer"></button>
+      <aside class="side" aria-label="เมนู" style="position: absolute; top: 0; left: 0; bottom: 0; width: 300px; box-shadow: 16px 0 40px -20px rgba(15,23,42,.4)">
+        <div class="brand" style="padding-bottom: 12px">
+          <img src="98b36204-f3c5-4b2b-aaa1-daf54665d357" alt="โลโก้โรงพยาบาลอุตรดิตถ์" style="width: 44px; height: 44px; flex: none; object-fit: contain; background: #ffffff; border-radius: 50%; padding: 1px">
+          <div style="display: flex; flex-direction: column; flex: 1">
+            <span class="brand-t">PharmCare OPD</span>
+            <span class="brand-s">งานบริบาลเภสัชกรรม</span>
+          </div>
+          <button type="button" class="btn btn-ic btn-sm" aria-label="ปิดเมนู" sc-camel-on-click="{{closeDrawer}}" style="width: 40px"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"></path></svg></button>
+        </div>
+        <nav style="display: flex; flex-direction: column; gap: 4px">
+          <div class="grp">เมนูหลัก</div>
+          <a class="nav on" href="MSearch.dc.html" aria-current="page"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path></svg>ค้นหาผู้ป่วย</a>
+          <a class="nav" href="KPI.dc.html"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 20h18M6 16v-5M11 16V7M16 16v-8M21 16v-3"></path></svg>ตัวชี้วัด</a>
+          <div class="grp">ข้อมูล</div>
+          <a class="nav" href="Data.dc.html"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><ellipse cx="12" cy="5" rx="8" ry="3"></ellipse><path d="M4 5v14c0 1.7 3.6 3 8 3s8-1.3 8-3V5M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3"></path></svg>ข้อมูลและประวัติ</a>
+          <a class="nav" href="#"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="2"></rect><rect x="14" y="14" width="7" height="7" rx="2"></rect><path d="M10 6.5h4a3 3 0 0 1 3 3V14"></path></svg>ขั้นตอนงาน</a>
+        </nav>
+        <div style="flex: 1"></div>
+        <div class="usercard">
+          <span class="avatar">สจ</span>
+          <div style="display: flex; flex-direction: column">
+            <span style="font-weight: 600; font-size: 14px">ภญ.สมใจ รักษ์ยา</span>
+            <span class="muted xs">เภสัชกร</span>
+          </div>
+        </div>
+        <a class="btn btn-out-dan" href="Login.dc.html" style="width: 100%; margin-top: 8px"><svg class="ic ic-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 4h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-3M10 17l5-5-5-5M15 12H4"></path></svg>ออกจากระบบ</a>
+      </aside>
+    </div>
+  </sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script="" data-props="{&quot;theme&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;light&quot;,&quot;dark&quot;],&quot;default&quot;:&quot;light&quot;},&quot;drawer&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false},&quot;$preview&quot;:{&quot;width&quot;:390,&quot;height&quot;:844}}">
+class Component extends DCLogic {
+  constructor(p) { super(p); this.state = { drawer: null }; }
+  renderVals() {
+    const theme = this.props.theme ?? 'light';
+    const drawer = this.state.drawer ?? (this.props.drawer ?? false);
+    return {
+      themeClass: theme === 'dark' ? 'dark' : '',
+      drawer,
+      openDrawer: () => this.setState({ drawer: true }),
+      closeDrawer: () => this.setState({ drawer: false }),
+      today: [
+        { ini: 'สท', name: 'นายสมมติ ทดสอบ', hn: '6900001', clinic: 'เบาหวาน', tag: 'Visit', c: '' },
+        { ini: 'ตจ', name: 'นางสาวตัวอย่าง ใจดี', hn: '6900015', clinic: 'วาร์ฟาริน', tag: 'ยาเสี่ยงสูง', c: 'warn' },
+        { ini: 'ทร', name: 'นายทดลอง ระบบดี', hn: '6900023', clinic: 'หอบหืด', tag: 'สอนเทคนิค', c: 'info' },
+        { ini: 'ขส', name: 'นางข้อมูล สมมุติ', hn: '6900031', clinic: 'ความดันฯ', tag: 'DRP', c: 'mute' }
+      ],
+      drps: [
+        { sev: 'C', type: 'ไม่ร่วมมือในการใช้ยา', name: 'นายสมมติ ทดสอบ', age: 'ครบนัดวันนี้' },
+        { sev: 'D', type: 'ขนาดยาสูงเกินไป', name: 'นางข้อมูล สมมุติ', age: 'ค้าง 14 วัน' },
+        { sev: 'E', type: 'อันตรกิริยาระหว่างยา', name: 'นางสาวตัวอย่าง ใจดี', age: 'ค้าง 6 วัน' }
+      ]
+    };
+  }
+}
+</script>
+
+
+</body></html>

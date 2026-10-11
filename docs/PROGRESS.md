@@ -7,7 +7,8 @@
 | ขั้น | งาน | สถานะ |
 |---|---|---|
 | 0 | สร้าง repo + โครงโฟลเดอร์ | ✅ เสร็จ |
-| 1 | Scaffold Next.js + Tailwind + Drizzle + docker compose สำหรับ dev | ⬜ |
+| – | นำดีไซน์จาก Claude Design เข้า repo (`docs/design/`) | ✅ เสร็จ |
+| 1 | Scaffold Next.js + theme.css จากดีไซน์ + Drizzle + docker compose สำหรับ dev | ⬜ |
 | 2 | Auth: login / logout / requireUser / rate limit | ⬜ |
 | 3 | Schema + migrations + triggers + grants | ⬜ |
 | 4 | ฟังก์ชันคำนวณ (eGFR, TTR, Naranjo, คะแนนเทคนิค) + checklist + unit tests | ⬜ |
@@ -19,7 +20,6 @@
 
 ## รอผู้ใช้
 
-- [ ] ออกแบบหน้าจอด้วย Claude Design (prompt อยู่ในแชต) แล้วส่งผลกลับมา
 - [ ] ยืนยันว่าการอนุมัติ PDPA ของโรงพยาบาลครอบคลุมการเก็บชื่อ-สกุลเต็ม
 - [ ] เปิด Swagger ของโปรแกรมคิว (`/api/docs`) ดูว่ามี endpoint ค้นคลินิกจาก HN หรือ VN ไหม
 - [ ] ขอ token ของ API กลาง (`/api/hosxp/patient`) และ service account ของโปรแกรมคิว
@@ -32,3 +32,4 @@
 ## บันทึก
 
 - 2026-10-12: สร้าง repo
+- 2026-10-12: นำดีไซน์ 20 หน้าจอ + theme.css + โลโก้เข้า repo เลิกใช้ Tailwind ใช้ CSS จากดีไซน์แทน

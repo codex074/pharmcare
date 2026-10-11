@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="th"><head>
+<meta charset="utf-8">
+<title>ข้อมูลและประวัติ · PharmCare OPD</title>
+<link rel="stylesheet" href="../theme.css">
+</head>
+<body>
+<x-dc>
+
+<div class="pc {{themeClass}}" style="min-height: 100vh; display: flex; flex-wrap: wrap; align-items: stretch">
+
+  <aside class="side" style="flex: 0 0 264px">
+    <div class="brand">
+      <img src="36e43c19-a560-4eb3-b9cf-4c9be1e65a24" alt="โลโก้โรงพยาบาลอุตรดิตถ์" style="width: 46px; height: 46px; flex: none; object-fit: contain; background: #ffffff; border-radius: 50%; padding: 1px">
+      <div style="display: flex; flex-direction: column">
+        <span class="brand-t">PharmCare OPD</span>
+        <span class="brand-s">งานบริบาลเภสัชกรรม</span>
+      </div>
+    </div>
+    <nav aria-label="เมนูหลัก" style="display: flex; flex-direction: column; gap: 4px">
+      <div class="grp">เมนูหลัก</div>
+      <a class="nav" href="Main.dc.html"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path></svg>ค้นหาผู้ป่วย</a>
+      <a class="nav" href="KPI.dc.html"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 20h18M6 16v-5M11 16V7M16 16v-8M21 16v-3"></path></svg>ตัวชี้วัด</a>
+      <div class="grp">ข้อมูล</div>
+      <a class="nav on" href="Data.dc.html" aria-current="page"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><ellipse cx="12" cy="5" rx="8" ry="3"></ellipse><path d="M4 5v14c0 1.7 3.6 3 8 3s8-1.3 8-3V5M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3"></path></svg>ข้อมูลและประวัติ</a>
+      <a class="nav" href="#"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="2"></rect><rect x="14" y="14" width="7" height="7" rx="2"></rect><path d="M10 6.5h4a3 3 0 0 1 3 3V14"></path></svg>ขั้นตอนงาน</a>
+    </nav>
+    <div style="flex: 1"></div>
+    <div class="usercard">
+      <span class="avatar">สจ</span>
+      <div style="display: flex; flex-direction: column; min-width: 0">
+        <span style="font-weight: 600; font-size: 14px">ภญ.สมใจ รักษ์ยา</span>
+        <span class="muted xs">เภสัชกร</span>
+      </div>
+    </div>
+    <a class="btn btn-out-dan" href="Login.dc.html" style="width: 100%; margin-top: 8px"><svg class="ic ic-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 4h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-3M10 17l5-5-5-5M15 12H4"></path></svg>ออกจากระบบ</a>
+  </aside>
+
+  <main style="flex: 999 1 560px; min-width: 0; display: flex; flex-direction: column">
+    <header class="hdr">
+      <h1 class="h1" style="flex: 1">ข้อมูลและประวัติ</h1>
+      <span class="muted sm" style="display: flex; align-items: center; gap: 8px"><svg class="ic ic-sm" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"></rect><path d="M3 10h18M8 3v4M16 3v4"></path></svg>วันจันทร์ที่ 12 ตุลาคม 2569</span>
+      <span class="userchip"><span class="avatar sm">สจ</span>ภญ.สมใจ</span>
+    </header>
+
+    <div style="width: 100%; max-width: 1180px; margin: 0 auto; padding: 28px 32px 56px; display: flex; flex-direction: column; gap: 26px">
+
+      <section style="display: flex; flex-direction: column; gap: 12px">
+        <div style="display: flex; align-items: baseline; justify-content: space-between; gap: 12px; flex-wrap: wrap">
+          <h2 class="h2" style="font-size: 18px">ส่งออกข้อมูล</h2>
+          <span class="muted sm">ไฟล์ CSV เข้ารหัส UTF-8 (BOM) เปิดใน Excel ได้ทันที</span>
+        </div>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(250px, 100%), 1fr)); gap: 14px">
+          <sc-for list="{{tables}}" as="t" hint-placeholder-count="7">
+            <div class="card" style="padding: 18px; display: flex; flex-direction: column; gap: 12px">
+              <div style="display: flex; align-items: flex-start; gap: 12px">
+                <span class="care-ic" style="width: 38px; height: 38px"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v14H4zM4 10h16M10 10v9"></path></svg></span>
+                <div style="flex: 1; min-width: 0; display: flex; flex-direction: column">
+                  <span style="font-weight: 700">{{t.name}}</span>
+                  <span class="faint xs mono">{{t.code}}</span>
+                </div>
+              </div>
+              <div style="display: flex; justify-content: space-between; align-items: baseline">
+                <span><span class="mono" style="font-weight: 700; font-size: 20px; color: var(--h)">{{t.rows}}</span> <span class="muted sm">แถว</span></span>
+                <span class="faint xs">อัปเดต {{t.upd}}</span>
+              </div>
+              <button type="button" class="btn btn-sm" style="width: 100%"><svg class="ic ic-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"></path></svg>ส่งออก CSV</button>
+            </div>
+          </sc-for>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="card-hd" style="flex-wrap: wrap">
+          <div style="display: flex; flex-direction: column">
+            <h2 class="h2">ประวัติการแก้ไข (Audit log)</h2>
+            <span class="muted sm">ใคร เมื่อไร เปลี่ยนอะไร · เก็บถาวร แก้ไขไม่ได้</span>
+          </div>
+          <button type="button" class="btn btn-sm"><svg class="ic ic-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"></path></svg>ส่งออก CSV</button>
+        </div>
+        <div style="display: flex; gap: 10px; flex-wrap: wrap; padding: 14px 22px; border-bottom: 1px solid var(--line2)">
+          <label style="flex: 2 1 240px; display: flex; align-items: center; gap: 8px; border: 1px solid var(--line); border-radius: 11px; padding: 0 12px; min-height: 42px; color: var(--tx3)">
+            <svg class="ic ic-sm" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path></svg>
+            <input aria-label="ค้นหา HN หรือเลขรายการ" placeholder="ค้นหา HN / เลขรายการ" style="border: 0; outline: none; background: transparent; flex: 1; min-width: 0; color: var(--tx)">
+          </label>
+          <sc-raw-select class="input" aria-label="ผู้ใช้" style="flex: 1 1 160px; min-height: 42px; width: auto"><option>ผู้ใช้ทั้งหมด</option></sc-raw-select>
+          <sc-raw-select class="input" aria-label="การกระทำ" style="flex: 1 1 160px; min-height: 42px; width: auto"><option>ทุกการกระทำ</option></sc-raw-select>
+          <sc-raw-select class="input" aria-label="ช่วงเวลา" style="flex: 1 1 160px; min-height: 42px; width: auto"><option>7 วันล่าสุด</option></sc-raw-select>
+        </div>
+        <div class="scroll-x">
+          <sc-raw-table class="tbl" style="min-width: 860px">
+            <sc-raw-thead><sc-raw-tr><sc-raw-th>เมื่อไร</sc-raw-th><sc-raw-th>ใคร</sc-raw-th><sc-raw-th>การกระทำ</sc-raw-th><sc-raw-th>รายการ</sc-raw-th><sc-raw-th>เปลี่ยนอะไร</sc-raw-th></sc-raw-tr></sc-raw-thead>
+            <sc-raw-tbody>
+              <sc-for list="{{logs}}" as="l" hint-placeholder-count="8">
+                <sc-raw-tr>
+                  <sc-raw-td class="mono sm" style="white-space: nowrap"><span style="font-weight: 600">{{l.time}}</span><br><span class="faint xs">{{l.date}}</span></sc-raw-td>
+                  <sc-raw-td style="white-space: nowrap"><span style="display: flex; align-items: center; gap: 8px"><span class="avatar sm">{{l.ini}}</span><span class="sm" style="font-weight: 600">{{l.who}}</span></span></sc-raw-td>
+                  <sc-raw-td><span class="chip {{l.c}}" style="font-size: 12px; padding: 2px 9px">{{l.act}}</span></sc-raw-td>
+                  <sc-raw-td class="sm"><span style="font-weight: 600" class="mono">{{l.ref}}</span><br><span class="faint xs">{{l.sub}}</span></sc-raw-td>
+                  <sc-raw-td class="sm">
+                    <span class="muted">{{l.field}}</span>
+                    <sc-if value="{{l.hasOld}}" hint-placeholder-val="{{ true }}"><span style="text-decoration: line-through; color: var(--dan-tx); margin: 0 6px">{{l.old}}</span><span class="faint">→</span></sc-if>
+                    <span style="font-weight: 600; margin-left: 6px">{{l.nw}}</span>
+                  </sc-raw-td>
+                </sc-raw-tr>
+              </sc-for>
+            </sc-raw-tbody>
+          </sc-raw-table>
+        </div>
+        <div style="display: flex; align-items: center; justify-content: space-between; padding: 12px 22px; border-top: 1px solid var(--line2); gap: 10px; flex-wrap: wrap">
+          <span class="muted sm">แสดง 1–8 จาก 18,402 รายการ</span>
+          <div style="display: flex; gap: 6px">
+            <button type="button" class="btn btn-sm" disabled="" style="opacity: .5">ก่อนหน้า</button>
+            <button type="button" class="btn btn-sm">ถัดไป</button>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script="" data-props="{&quot;theme&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;light&quot;,&quot;dark&quot;],&quot;default&quot;:&quot;light&quot;},&quot;$preview&quot;:{&quot;width&quot;:1440,&quot;height&quot;:1200}}">
+class Component extends DCLogic {
+  renderVals() {
+    const theme = this.props.theme ?? 'light';
+    const tables = [
+      { name: 'ผู้ป่วย', code: 'patients', rows: '1,204', upd: '09:22' },
+      { name: 'Visit ติดตามโรคเรื้อรัง', code: 'visits', rows: '3,390', upd: '09:24' },
+      { name: 'ปัญหาจากการใช้ยา (DRP)', code: 'drp', rows: '1,084', upd: '08:55' },
+      { name: 'ยาความเสี่ยงสูง', code: 'high_alert', rows: '612', upd: '11 ต.ค.' },
+      { name: 'ADR / แพ้ยา', code: 'adr', rows: '147', upd: '11 ต.ค.' },
+      { name: 'สอนเทคนิคการใช้ยา', code: 'technique', rows: '958', upd: '09:41' }
+    ];
+    const logs = [
+      { time: '09:41:12', date: '12 ต.ค. 69', ini: 'สจ', who: 'ภญ.สมใจ รักษ์ยา', act: 'สร้าง', c: 'ok', ref: 'T-0958', sub: 'สอนเทคนิค · HN 6900001', field: 'อุปกรณ์ ปากกาอินซูลิน · ทำถูก', hasOld: false, old: '', nw: '70%' },
+      { time: '09:24:05', date: '12 ต.ค. 69', ini: 'สจ', who: 'ภญ.สมใจ รักษ์ยา', act: 'สร้าง', c: 'ok', ref: 'V-3390', sub: 'Visit · HN 6900001', field: 'HbA1c 7.8 · ความร่วมมือ', hasOld: false, old: '', nw: '85%' },
+      { time: '09:22:47', date: '12 ต.ค. 69', ini: 'สจ', who: 'ภญ.สมใจ รักษ์ยา', act: 'แก้ไข', c: 'info', ref: 'HN 6900001', sub: 'ผู้ป่วย', field: 'คลินิกวันนี้', hasOld: true, old: '—', nw: 'เบาหวาน (HIS)' },
+      { time: '08:55:30', date: '12 ต.ค. 69', ini: 'ธใ', who: 'ภก.ธนา ใส่ใจ', act: 'แก้ไข', c: 'info', ref: 'D-1081', sub: 'DRP · HN 6900015', field: 'ผลลัพธ์', hasOld: true, old: 'รอติดตามผล', nw: 'แก้ไขได้' },
+      { time: '16:10:02', date: '11 ต.ค. 69', ini: 'ธใ', who: 'ภก.ธนา ใส่ใจ', act: 'ยกเลิก', c: 'bad', ref: 'A-0146', sub: 'ADR · HN 6900044', field: 'เหตุผล', hasOld: false, old: '', nw: 'บันทึกซ้ำกับ A-0145' },
+      { time: '15:02:44', date: '11 ต.ค. 69', ini: 'วด', who: 'ภญ.วรรณา ดีงาม', act: 'ส่งออก', c: 'mute', ref: 'visits.csv', sub: 'ส่งออกข้อมูล', field: 'ช่วง 1 ต.ค. 68 – 11 ต.ค. 69 ·', hasOld: false, old: '', nw: '3,388 แถว' },
+      { time: '14:33:19', date: '11 ต.ค. 69', ini: 'วด', who: 'ภญ.วรรณา ดีงาม', act: 'สร้าง', c: 'ok', ref: 'HN 6900099', sub: 'ผู้ป่วย', field: 'ลงทะเบียน ·', hasOld: false, old: '', nw: 'กรอกเอง (HIS ไม่ตอบสนอง)' },
+      { time: '10:20:51', date: '10 ต.ค. 69', ini: 'ธใ', who: 'ภก.ธนา ใส่ใจ', act: 'แก้ไข', c: 'info', ref: 'V-3352', sub: 'Visit · HN 6900023', field: 'SBP', hasOld: true, old: '182', nw: '128' }
+    ];
+    return { themeClass: theme === 'dark' ? 'dark' : '', tables, logs };
+  }
+}
+</script>
+
+
+</body></html>

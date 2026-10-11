@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="th"><head>
+<meta charset="utf-8">
+<title>ฟอร์ม ADR · PharmCare OPD</title>
+<link rel="stylesheet" href="../theme.css">
+</head>
+<body>
+<x-dc>
+
+<div class="pc panel {{themeClass}}" style="width: 100%; min-height: 100%">
+  <div class="panel-hd">
+    <span class="care-ic" style="background: var(--dan-bg); color: var(--dan-tx)"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 8v5M12 16v.01"></path></svg></span>
+    <div style="flex: 1; min-width: 0; display: flex; flex-direction: column">
+      <h2 class="h2">ADR / แพ้ยา</h2>
+      <span class="muted xs">นายสมมติ ทดสอบ · <span class="mono">HN 6900001</span></span>
+    </div>
+    <button type="button" class="btn btn-ic btn-sm" aria-label="ปิดแผง" style="width: 40px"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"></path></svg></button>
+  </div>
+
+  <div class="sec">
+    <span class="sec-t"><span class="step-n">1</span>ข้อมูลอาการ</span>
+    <div class="field"><label class="label" for="drug">ยาที่สงสัย</label><input id="drug" class="input" value="Simvastatin 20 mg วันละ 1 ครั้ง ก่อนนอน"></div>
+    <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px">
+      <div class="field"><label class="label" for="d1">วันที่เริ่มยา</label><input id="d1" class="input" value="20 เม.ย. 2569"></div>
+      <div class="field"><label class="label" for="d2">วันที่เกิดอาการ</label><input id="d2" class="input" value="28 ก.ย. 2569"></div>
+    </div>
+    <div class="field"><label class="label" for="sx">อาการที่พบ</label><textarea id="sx" class="input">ปวดเมื่อยกล้ามเนื้อต้นขาทั้งสองข้าง อ่อนแรงเล็กน้อย ไม่มีปัสสาวะสีเข้ม</textarea></div>
+    <div class="field">
+      <span class="label">ความรุนแรง</span>
+      <div class="seg" role="radiogroup" aria-label="ความรุนแรง" style="display: flex">
+        <button type="button" role="radio" aria-checked="false" style="flex: 1">ไม่รุนแรง</button>
+        <button type="button" class="on" role="radio" aria-checked="true" style="flex: 1">ปานกลาง</button>
+        <button type="button" role="radio" aria-checked="false" style="flex: 1">รุนแรง</button>
+      </div>
+    </div>
+    <div class="field">
+      <span class="label">การจัดการ</span>
+      <div style="display: flex; gap: 8px; flex-wrap: wrap">
+        <button type="button" class="opt on" aria-pressed="true" style="min-height: 40px">หยุดยา</button>
+        <button type="button" class="opt" aria-pressed="false" style="min-height: 40px">ลดขนาดยา</button>
+        <button type="button" class="opt" aria-pressed="false" style="min-height: 40px">ให้ยารักษาอาการ</button>
+        <button type="button" class="opt on" aria-pressed="true" style="min-height: 40px">ส่งพบแพทย์</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="sec" style="background: var(--pri-50); position: sticky; top: 76px; z-index: 1; border-bottom-color: var(--pri-100); gap: 10px">
+    <div style="display: flex; align-items: center; gap: 14px">
+      <div style="display: flex; flex-direction: column; flex: 1">
+        <span class="label">คะแนน Naranjo</span>
+        <span style="display: flex; align-items: baseline; gap: 10px">
+          <span class="mono" style="font-size: 34px; font-weight: 700; color: var(--h); line-height: 1.1">{{score}}</span>
+          <span class="muted sm">ตอบแล้ว {{answered}}/10 ข้อ</span>
+        </span>
+      </div>
+      <span class="chip {{interpCls}}" style="font-size: 14px; padding: 6px 14px">{{interp}}</span>
+    </div>
+    <div style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 4px" aria-hidden="true">
+      <sc-for list="{{scale}}" as="s" hint-placeholder-count="4">
+        <div style="display: flex; flex-direction: column; gap: 4px">
+          <div style="height: 8px; border-radius: 999px; background: {{s.bg}}"></div>
+          <span class="xs" style="color: {{s.fg}}; font-weight: {{s.fw}}">{{s.label}}</span>
+        </div>
+      </sc-for>
+    </div>
+  </div>
+
+  <div class="sec">
+    <span class="sec-t"><span class="step-n">2</span>แบบประเมิน Naranjo</span>
+    <ol style="list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px">
+      <sc-for list="{{qs}}" as="q" hint-placeholder-count="10">
+        <li style="display: flex; flex-direction: column; gap: 8px; padding: 12px; border: 1px solid var(--line); border-radius: 14px">
+          <div style="display: flex; gap: 10px">
+            <span class="step-n">{{q.n}}</span>
+            <span style="font-size: 14.5px; flex: 1">{{q.text}}</span>
+          </div>
+          <div class="seg" role="radiogroup" aria-label="คำตอบข้อ {{q.n}}" style="display: flex">
+            <sc-for list="{{q.opts}}" as="o" hint-placeholder-count="3">
+              <button type="button" class="{{o.on}}" role="radio" aria-checked="{{o.sel}}" sc-camel-on-click="{{o.pick}}" style="flex: 1; display: flex; align-items: center; justify-content: center; gap: 6px">{{o.label}}<span class="xs" style="font-weight: 500; opacity: .75">{{o.pts}}</span></button>
+            </sc-for>
+          </div>
+        </li>
+      </sc-for>
+    </ol>
+  </div>
+
+  <div class="sec">
+    <label class="sm" style="display: flex; align-items: center; gap: 10px"><input type="checkbox" style="width: 18px; height: 18px; accent-color: var(--pri)">บันทึกเป็นประวัติแพ้ยาและออกบัตรแพ้ยา</label>
+  </div>
+
+  <div style="flex: 1"></div>
+  <div class="panel-ft" style="position: sticky; bottom: 0">
+    <button type="button" class="btn">ยกเลิก</button>
+    <button type="button" class="btn btn-pri" style="flex: 1; max-width: 220px">บันทึก ADR</button>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script="" data-props="{&quot;theme&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;light&quot;,&quot;dark&quot;],&quot;default&quot;:&quot;light&quot;},&quot;$preview&quot;:{&quot;width&quot;:520,&quot;height&quot;:1900}}">
+class Component extends DCLogic {
+  constructor(p) {
+    super(p);
+    this.state = { ans: ['y', 'y', 'y', 'u', 'n', 'u', 'u', 'u', 'n', 'u'] };
+  }
+  renderVals() {
+    const theme = this.props.theme ?? 'light';
+    const Q = [
+      ['เคยมีรายงานสรุปการเกิดปฏิกิริยานี้มาก่อนหรือไม่', 1, 0],
+      ['อาการเกิดขึ้นหลังได้รับยาที่สงสัยหรือไม่', 2, -1],
+      ['อาการดีขึ้นเมื่อหยุดยา หรือได้รับยาต้านเฉพาะหรือไม่', 1, 0],
+      ['อาการเกิดซ้ำเมื่อได้รับยาซ้ำหรือไม่', 2, -1],
+      ['มีสาเหตุอื่น (นอกจากยา) ที่ทำให้เกิดอาการได้หรือไม่', -1, 2],
+      ['อาการเกิดขึ้นเมื่อได้รับยาหลอกหรือไม่', -1, 1],
+      ['ตรวจพบยาในเลือดหรือของเหลวในระดับที่เป็นพิษหรือไม่', 1, 0],
+      ['อาการรุนแรงขึ้นเมื่อเพิ่มขนาดยา หรือลดลงเมื่อลดขนาดยาหรือไม่', 1, 0],
+      ['ผู้ป่วยเคยมีอาการคล้ายกันกับยานี้หรือยาที่คล้ายกันหรือไม่', 1, 0],
+      ['มีหลักฐานยืนยันจากผลตรวจทางห้องปฏิบัติการหรือไม่', 1, 0]
+    ];
+    const ans = this.state.ans;
+    const fmt = (v) => (v > 0 ? '+' + v : String(v));
+    let score = 0;
+    const qs = Q.map(([text, y, n], i) => {
+      const a = ans[i];
+      score += a === 'y' ? y : a === 'n' ? n : 0;
+      const set = (v) => { const next = ans.slice(); next[i] = next[i] === v ? null : v; this.setState({ ans: next }); };
+      const opts = [['y', 'ใช่', y], ['n', 'ไม่ใช่', n], ['u', 'ไม่ทราบ', 0]].map(([k, label, pts]) => ({
+        label, pts: fmt(pts), on: a === k ? 'on' : '', sel: a === k ? 'true' : 'false', pick: () => set(k)
+      }));
+      return { n: i + 1, text, opts };
+    });
+    const answered = ans.filter((a) => a).length;
+    let lvl = 0;
+    if (score >= 9) lvl = 3; else if (score >= 5) lvl = 2; else if (score >= 1) lvl = 1;
+    const names = ['ไม่น่าใช่', 'อาจจะใช่', 'น่าจะใช่', 'ใช่แน่นอน'];
+    const ranges = ['≤ 0', '1–4', '5–8', '≥ 9'];
+    const cls = ['mute', 'info', 'warn', 'bad'];
+    const scale = names.map((nm, i) => ({
+      label: ranges[i] + ' ' + nm,
+      bg: i === lvl ? 'var(--pri)' : 'var(--pri-100)',
+      fg: i === lvl ? 'var(--pri-tx)' : 'var(--tx2)',
+      fw: i === lvl ? '700' : '500'
+    }));
+    return {
+      themeClass: theme === 'dark' ? 'dark' : '',
+      qs, score, answered, interp: names[lvl], interpCls: cls[lvl], scale
+    };
+  }
+}
+</script>
+
+
+</body></html>

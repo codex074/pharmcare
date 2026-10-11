@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="th"><head>
+<meta charset="utf-8">
+<title>ตัวชี้วัด · PharmCare OPD</title>
+<link rel="stylesheet" href="../theme.css">
+</head>
+<body>
+<x-dc>
+
+<div class="pc {{themeClass}}" style="min-height: 100vh; display: flex; flex-wrap: wrap; align-items: stretch">
+
+  <aside class="side" style="flex: 0 0 264px">
+    <div class="brand">
+      <img src="ac8fcb32-b5cf-46bf-9067-144bfb92cecb" alt="โลโก้โรงพยาบาลอุตรดิตถ์" style="width: 46px; height: 46px; flex: none; object-fit: contain; background: #ffffff; border-radius: 50%; padding: 1px">
+      <div style="display: flex; flex-direction: column">
+        <span class="brand-t">PharmCare OPD</span>
+        <span class="brand-s">งานบริบาลเภสัชกรรม</span>
+      </div>
+    </div>
+    <nav aria-label="เมนูหลัก" style="display: flex; flex-direction: column; gap: 4px">
+      <div class="grp">เมนูหลัก</div>
+      <a class="nav" href="Main.dc.html"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path></svg>ค้นหาผู้ป่วย</a>
+      <a class="nav on" href="KPI.dc.html" aria-current="page"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 20h18M6 16v-5M11 16V7M16 16v-8M21 16v-3"></path></svg>ตัวชี้วัด</a>
+      <div class="grp">ข้อมูล</div>
+      <a class="nav" href="Data.dc.html"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><ellipse cx="12" cy="5" rx="8" ry="3"></ellipse><path d="M4 5v14c0 1.7 3.6 3 8 3s8-1.3 8-3V5M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3"></path></svg>ข้อมูลและประวัติ</a>
+      <a class="nav" href="#"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="2"></rect><rect x="14" y="14" width="7" height="7" rx="2"></rect><path d="M10 6.5h4a3 3 0 0 1 3 3V14"></path></svg>ขั้นตอนงาน</a>
+    </nav>
+    <div style="flex: 1"></div>
+    <div class="usercard">
+      <span class="avatar">สจ</span>
+      <div style="display: flex; flex-direction: column; min-width: 0">
+        <span style="font-weight: 600; font-size: 14px">ภญ.สมใจ รักษ์ยา</span>
+        <span class="muted xs">เภสัชกร</span>
+      </div>
+    </div>
+    <a class="btn btn-out-dan" href="Login.dc.html" style="width: 100%; margin-top: 8px"><svg class="ic ic-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 4h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-3M10 17l5-5-5-5M15 12H4"></path></svg>ออกจากระบบ</a>
+  </aside>
+
+  <main style="flex: 999 1 560px; min-width: 0; display: flex; flex-direction: column">
+    <header class="hdr">
+      <h1 class="h1" style="flex: 1">ตัวชี้วัด</h1>
+      <span class="muted sm" style="display: flex; align-items: center; gap: 8px"><svg class="ic ic-sm" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"></rect><path d="M3 10h18M8 3v4M16 3v4"></path></svg>วันจันทร์ที่ 12 ตุลาคม 2569</span>
+      <span class="userchip"><span class="avatar sm">สจ</span>ภญ.สมใจ</span>
+    </header>
+
+    <div style="width: 100%; max-width: 1180px; margin: 0 auto; padding: 28px 32px 56px; display: flex; flex-direction: column; gap: 22px">
+      <div style="display: flex; align-items: center; justify-content: space-between; gap: 14px; flex-wrap: wrap">
+        <div style="display: flex; flex-direction: column">
+          <h2 class="h2" style="font-size: 18px">ภาพรวมงานบริบาล</h2>
+          <span class="muted sm">{{rangeText}}</span>
+        </div>
+        <div class="seg" role="radiogroup" aria-label="ช่วงเวลา">
+          <sc-for list="{{periods}}" as="p" hint-placeholder-count="4">
+            <button type="button" class="{{p.on}}" role="radio" aria-checked="{{p.sel}}" sc-camel-on-click="{{p.pick}}">{{p.label}}</button>
+          </sc-for>
+        </div>
+      </div>
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(170px, 100%), 1fr)); gap: 14px">
+        <sc-for list="{{kpis}}" as="k" hint-placeholder-count="6">
+          <div class="card kpi">
+            <span class="kpi-l">{{k.label}}</span>
+            <span class="kpi-v">{{k.value}}</span>
+            <span class="faint xs">{{k.note}}</span>
+          </div>
+        </sc-for>
+      </div>
+
+      <section class="card">
+        <div class="card-hd" style="flex-wrap: wrap">
+          <div style="display: flex; flex-direction: column">
+            <h3 class="h2">DRP ตามประเภท</h3>
+            <span class="muted sm">รวม {{drpTotal}} รายการ</span>
+          </div>
+          <button type="button" class="btn btn-sm"><svg class="ic ic-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"></path></svg>ส่งออก CSV</button>
+        </div>
+        <div class="card-bd" style="display: flex; flex-direction: column; gap: 12px" role="img" aria-label="กราฟแท่ง DRP ตามประเภท">
+          <sc-for list="{{bars}}" as="b" hint-placeholder-count="8">
+            <div style="display: grid; grid-template-columns: minmax(120px, 200px) minmax(0, 1fr) 96px; gap: 14px; align-items: center">
+              <span class="sm" style="font-weight: 500">{{b.label}}</span>
+              <div style="height: 22px; background: var(--line2); border-radius: 7px; overflow: hidden">
+                <div style="height: 100%; width: {{b.w}}; background: {{b.fill}}; border-radius: 7px; transition: width .3s"></div>
+              </div>
+              <span class="sm mono" style="text-align: right"><span style="font-weight: 700; color: var(--h)">{{b.n}}</span> <span class="faint">· {{b.pct}}</span></span>
+            </div>
+          </sc-for>
+        </div>
+      </section>
+    </div>
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script="" data-props="{&quot;theme&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;light&quot;,&quot;dark&quot;],&quot;default&quot;:&quot;light&quot;},&quot;$preview&quot;:{&quot;width&quot;:1440,&quot;height&quot;:1060}}">
+class Component extends DCLogic {
+  constructor(p) { super(p); this.state = { period: '90' }; }
+  renderVals() {
+    const theme = this.props.theme ?? 'light';
+    const D = {
+      '30': { range: '13 ก.ย. – 12 ต.ค. 2569', pt: '128', v: '164', dpv: '0.29', acc: '88.6%', res: '76.9%', ttr: '66.2%', c: [5, 3, 5, 8, 4, 4, 7, 12] },
+      '90': { range: '15 ก.ค. – 12 ต.ค. 2569', pt: '312', v: '455', dpv: '0.31', acc: '87.4%', res: '78.2%', ttr: '64.5%', c: [14, 9, 15, 24, 12, 11, 19, 37] },
+      '365': { range: '13 ต.ค. 2568 – 12 ต.ค. 2569', pt: '846', v: '1,712', dpv: '0.30', acc: '86.1%', res: '79.5%', ttr: '63.8%', c: [52, 33, 57, 88, 46, 41, 71, 126] },
+      'all': { range: 'ตั้งแต่เริ่มใช้ระบบ', pt: '1,204', v: '3,390', dpv: '0.32', acc: '85.3%', res: '78.8%', ttr: '62.9%', c: [104, 69, 115, 178, 92, 83, 141, 302] }
+    };
+    const cur = this.state.period;
+    const d = D[cur];
+    const periods = [['30', '30 วัน'], ['90', '90 วัน'], ['365', '1 ปี'], ['all', 'ทั้งหมด']].map(([k, label]) => ({ label, on: cur === k ? 'on' : '', sel: cur === k ? 'true' : 'false', pick: () => this.setState({ period: k }) }));
+    const kpis = [
+      { label: 'ผู้ป่วย', value: d.pt, note: 'ราย (ไม่ซ้ำ)' },
+      { label: 'Visit', value: d.v, note: 'ครั้งที่ติดตามโรคเรื้อรัง' },
+      { label: 'DRP ต่อ Visit', value: d.dpv, note: 'จำนวน DRP ÷ Visit' },
+      { label: '% แพทย์ยอมรับ', value: d.acc, note: 'จาก DRP ที่ปรึกษาแพทย์' },
+      { label: '% DRP แก้ไขได้', value: d.res, note: 'จาก DRP ที่ติดตามผลแล้ว' },
+      { label: 'TTR เฉลี่ย', value: d.ttr, note: 'ผู้ป่วยวาร์ฟาริน (Rosendaal)' }
+    ];
+    const names = ['ต้องการยาเพิ่ม', 'ได้รับยาที่ไม่จำเป็น', 'เลือกใช้ยาไม่เหมาะสม', 'ขนาดยาต่ำเกินไป', 'ขนาดยาสูงเกินไป', 'อาการไม่พึงประสงค์จากยา', 'อันตรกิริยาระหว่างยา', 'ไม่ร่วมมือในการใช้ยา'];
+    const total = d.c.reduce((a, b) => a + b, 0);
+    const max = Math.max.apply(null, d.c);
+    const bars = names.map((label, i) => ({
+      label, n: d.c[i], pct: Math.round((d.c[i] / total) * 100) + '%', w: ((d.c[i] / max) * 100).toFixed(1) + '%',
+      fill: d.c[i] === max ? 'var(--pri)' : 'var(--pri-100)'
+    }));
+    return { themeClass: theme === 'dark' ? 'dark' : '', periods, kpis, bars, drpTotal: total.toLocaleString('en-US'), rangeText: d.range };
+  }
+}
+</script>
+
+
+</body></html>

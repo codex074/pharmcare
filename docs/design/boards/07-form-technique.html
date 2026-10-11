@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="th"><head>
+<meta charset="utf-8">
+<title>ฟอร์มสอนเทคนิคการใช้ยา · PharmCare OPD</title>
+<link rel="stylesheet" href="../theme.css">
+</head>
+<body>
+<x-dc>
+
+<div class="pc panel {{themeClass}}" style="width: 100%; min-height: 100%">
+  <div class="panel-hd">
+    <sc-if value="{{mobile}}" hint-placeholder-val="{{ false }}">
+      <a class="btn btn-ic btn-sm" href="MPatient.dc.html" aria-label="ย้อนกลับ" style="width: 44px; min-height: 44px"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12H5M11 18l-6-6 6-6"></path></svg></a>
+    </sc-if>
+    <sc-if value="{{desktop}}" hint-placeholder-val="{{ true }}">
+      <span class="care-ic" style="background: var(--ok-bg); color: var(--ok-tx)"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 8l9-4 9 4-9 4-9-4z"></path><path d="M7 10v5c0 1.5 2.2 3 5 3s5-1.5 5-3v-5"></path></svg></span>
+    </sc-if>
+    <div style="flex: 1; min-width: 0; display: flex; flex-direction: column">
+      <h2 class="h2">สอนเทคนิคการใช้ยา</h2>
+      <span class="muted xs">นายสมมติ ทดสอบ · <span class="mono">HN 6900001</span></span>
+    </div>
+    <sc-if value="{{desktop}}" hint-placeholder-val="{{ true }}">
+      <a class="btn btn-ic btn-sm" href="Patient.dc.html" aria-label="ปิดแผง" style="width: 40px"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"></path></svg></a>
+    </sc-if>
+  </div>
+
+  <div class="sec">
+    <span class="sec-t"><span class="step-n">1</span>เลือกอุปกรณ์</span>
+    <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px">
+      <sc-for list="{{devices}}" as="d" hint-placeholder-count="4">
+        <button type="button" class="opt {{d.on}}" role="radio" aria-checked="{{d.sel}}" sc-camel-on-click="{{d.pick}}" style="flex-direction: column; align-items: flex-start; gap: 0; padding: 10px 14px">
+          <span>{{d.label}}</span>
+          <span class="xs" style="font-weight: 500; color: var(--tx2)">{{d.sub}}</span>
+        </button>
+      </sc-for>
+    </div>
+  </div>
+
+  <div class="sec" style="background: var(--pri-50); gap: 10px; position: sticky; top: 76px; z-index: 1; border-bottom-color: var(--pri-100)">
+    <div style="display: flex; align-items: flex-end; gap: 12px">
+      <div style="display: flex; flex-direction: column; flex: 1">
+        <span class="label">ทำถูกต้อง</span>
+        <span style="display: flex; align-items: baseline; gap: 10px">
+          <span class="mono" style="font-size: 34px; font-weight: 700; color: var(--h); line-height: 1.1">{{pct}}%</span>
+          <span class="muted sm">{{correct}} จาก {{total}} ขั้น</span>
+        </span>
+      </div>
+      <span class="chip {{verdictCls}}">{{verdict}}</span>
+    </div>
+    <div class="bar" role="progressbar" aria-valuenow="{{pct}}" aria-valuemin="0" aria-valuemax="100" aria-label="เปอร์เซ็นต์ที่ทำถูก" style="background: var(--card)"><div style="width: {{pctW}}"></div></div>
+    <div class="xs muted" style="display: flex; gap: 14px; flex-wrap: wrap">
+      <span>ขั้นสำคัญถูก {{keyOk}}/{{keyTotal}}</span>
+      <span>ประเมินแล้ว {{assessed}}/{{total}}</span>
+      <span>ครั้งก่อน {{prev}}</span>
+    </div>
+  </div>
+
+  <div class="sec">
+    <span class="sec-t"><span class="step-n">2</span>ประเมินทีละขั้น — {{deviceName}}</span>
+    <ol style="list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px">
+      <sc-for list="{{steps}}" as="s" hint-placeholder-count="8">
+        <li style="display: flex; gap: 12px; align-items: flex-start; padding: 12px; border-radius: 14px; border: 1px solid {{s.bd}}; background: {{s.bg}}">
+          <span class="step-n" style="margin-top: 1px">{{s.n}}</span>
+          <div style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 8px">
+            <span style="font-size: 14.5px; line-height: 1.5">{{s.text}}
+              <sc-if value="{{s.key}}" hint-placeholder-val="{{ false }}"><span class="chip bad" style="font-size: 11px; padding: 0 8px; margin-left: 6px; vertical-align: 2px">สำคัญ</span></sc-if>
+            </span>
+            <div style="display: flex; gap: 8px">
+              <button type="button" class="btn btn-sm" aria-pressed="{{s.okP}}" sc-camel-on-click="{{s.setOk}}" style="{{s.okStyle}}"><svg class="ic ic-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 5 5 9-10"></path></svg>ถูก</button>
+              <button type="button" class="btn btn-sm" aria-pressed="{{s.noP}}" sc-camel-on-click="{{s.setNo}}" style="{{s.noStyle}}"><svg class="ic ic-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"></path></svg>ไม่ถูก</button>
+            </div>
+          </div>
+        </li>
+      </sc-for>
+    </ol>
+  </div>
+
+  <div class="sec">
+    <label class="sec-t" for="tnote"><span class="step-n">3</span>ข้อแนะนำเพิ่มเติม</label>
+    <textarea id="tnote" class="input" placeholder="เช่น ทวนขั้นค้างเข็ม 10 วินาที ให้ผู้ป่วยนับในใจ">ทวนขั้นค้างเข็ม 10 วินาที ให้ผู้ป่วยนับ 1–10 ในใจก่อนดึงเข็ม</textarea>
+    <label class="sm" style="display: flex; align-items: center; gap: 10px"><input type="checkbox" checked="" style="width: 18px; height: 18px; accent-color: var(--pri)">นัดประเมินซ้ำในครั้งถัดไป</label>
+  </div>
+
+  <div style="flex: 1"></div>
+  <div class="panel-ft" style="position: sticky; bottom: 0">
+    <button type="button" class="btn">ยกเลิก</button>
+    <button type="button" class="btn btn-pri" style="flex: 1; max-width: 220px">บันทึกการสอน</button>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script="" data-props="{&quot;theme&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;light&quot;,&quot;dark&quot;],&quot;default&quot;:&quot;light&quot;},&quot;mobile&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false},&quot;$preview&quot;:{&quot;width&quot;:520,&quot;height&quot;:1300}}">
+class Component extends DCLogic {
+  constructor(p) {
+    super(p);
+    this.state = {
+      device: 'pen',
+      marks: {
+        pen: ['ok', 'ok', 'ok', 'ok', 'ok', 'ok', 'ok', 'no', null, null],
+        mdi: [null, null, null, null, null, null, null, null],
+        acc: [null, null, null, null, null, null, null],
+        turbo: [null, null, null, null, null, null, null]
+      }
+    };
+  }
+  renderVals() {
+    const theme = this.props.theme ?? 'light';
+    const mobile = this.props.mobile ?? false;
+    const D = {
+      pen: { label: 'ปากกาอินซูลิน', sub: 'Insulin pen', prev: '60% (13 ก.ค. 69)', steps: [
+        ['ล้างมือ ตรวจชื่อยา วันหมดอายุ และลักษณะยาในปากกา', false],
+        ['ยาชนิดขุ่น: คลึงปากการะหว่างฝ่ามือ 10 ครั้ง และพลิกขึ้น-ลง 10 ครั้ง', false],
+        ['เช็ดจุกยางด้วยแอลกอฮอล์ แล้วติดเข็มใหม่ทุกครั้ง', false],
+        ['ไล่อากาศ: หมุน 2 ยูนิต ชี้ปลายเข็มขึ้น กดจนเห็นหยดยาที่ปลายเข็ม', true],
+        ['หมุนเลือกขนาดยาตามแพทย์สั่ง และตรวจตัวเลขในช่องแสดงผล', true],
+        ['เลือกตำแหน่งฉีด หมุนเวียนจุด ห่างสะดืออย่างน้อย 2 นิ้ว', false],
+        ['ฉีดตั้งฉาก 90 องศา กดปุ่มจนสุด', false],
+        ['ค้างเข็มไว้ 10 วินาที ก่อนดึงออก', true],
+        ['ถอดเข็มทิ้งในภาชนะทิ้งของมีคม ไม่ใช้เข็มซ้ำ', false],
+        ['ปากกาที่เปิดใช้เก็บที่อุณหภูมิห้องไม่เกิน 28 วัน ปากกาใหม่เก็บตู้เย็น 2–8 °C', false]
+      ] },
+      mdi: { label: 'MDI', sub: 'ยาพ่นสูดชนิดกด', prev: '—', steps: [
+        ['เปิดฝา เขย่าหลอดยา 4–5 ครั้ง', false],
+        ['หายใจออกให้สุด โดยไม่เป่าลมเข้าหลอดยา', true],
+        ['อมปากหลอดให้สนิท', false],
+        ['กดพ่นยาพร้อมสูดหายใจเข้าช้า ๆ ลึก ๆ', true],
+        ['กลั้นหายใจ 10 วินาที แล้วหายใจออกช้า ๆ', true],
+        ['รอ 30–60 วินาที ก่อนพ่นครั้งถัดไป', false],
+        ['ปิดฝาหลอดยา', false],
+        ['บ้วนปากหลังใช้ยาสเตียรอยด์', false]
+      ] },
+      acc: { label: 'Accuhaler', sub: 'ยาผงสูด', prev: '—', steps: [
+        ['เปิดฝาโดยดันที่จับนิ้วโป้งจนสุด', false],
+        ['ดันคานจนได้ยินเสียงคลิก', true],
+        ['หายใจออกให้สุด ห่างจากเครื่อง', true],
+        ['อมปากเครื่องให้สนิท', false],
+        ['สูดหายใจเข้า เร็ว แรง และลึก', true],
+        ['กลั้นหายใจ 10 วินาที', false],
+        ['ปิดฝา และบ้วนปาก', false]
+      ] },
+      turbo: { label: 'Turbuhaler', sub: 'ยาผงสูด', prev: '—', steps: [
+        ['หมุนเปิดฝา ถือเครื่องตั้งตรง', false],
+        ['หมุนฐานไปจนสุดแล้วหมุนกลับจนได้ยินเสียงคลิก', true],
+        ['หายใจออกให้สุด ห่างจากเครื่อง', false],
+        ['อมปากเครื่อง สูดหายใจเข้า เร็ว แรง และลึก', true],
+        ['กลั้นหายใจ 10 วินาที', false],
+        ['ปิดฝา', false],
+        ['บ้วนปากหลังใช้ยา', false]
+      ] }
+    };
+    const dev = this.state.device;
+    const marks = this.state.marks[dev];
+    const setMark = (i, v) => {
+      const all = { ...this.state.marks };
+      const arr = all[dev].slice();
+      arr[i] = arr[i] === v ? null : v;
+      all[dev] = arr;
+      this.setState({ marks: all });
+    };
+    const okOn = 'background: var(--ok); border-color: var(--ok); color: #fff';
+    const noOn = 'background: var(--dan-tx); border-color: var(--dan-tx); color: #fff';
+    const steps = D[dev].steps.map(([text, key], i) => {
+      const m = marks[i];
+      return {
+        n: i + 1, text, key,
+        bg: m === 'ok' ? 'var(--ok-bg)' : (m === 'no' ? 'var(--dan-bg)' : 'var(--card)'),
+        bd: m === 'ok' ? 'var(--ok-bd)' : (m === 'no' ? 'var(--dan-bd)' : 'var(--line)'),
+        okStyle: m === 'ok' ? okOn : '', noStyle: m === 'no' ? noOn : '',
+        okP: m === 'ok' ? 'true' : 'false', noP: m === 'no' ? 'true' : 'false',
+        setOk: () => setMark(i, 'ok'), setNo: () => setMark(i, 'no')
+      };
+    });
+    const total = steps.length;
+    const correct = marks.filter((m) => m === 'ok').length;
+    const assessed = marks.filter((m) => m).length;
+    const keyIdx = D[dev].steps.map((s, i) => (s[1] ? i : -1)).filter((i) => i >= 0);
+    const keyOk = keyIdx.filter((i) => marks[i] === 'ok').length;
+    const pct = Math.round((correct / total) * 100);
+    let verdict = 'ยังไม่ประเมิน', verdictCls = 'mute';
+    if (assessed > 0) {
+      if (pct >= 80 && keyOk === keyIdx.length) { verdict = 'ผ่าน'; verdictCls = 'ok'; }
+      else { verdict = 'ต้องทวนซ้ำ'; verdictCls = 'warn'; }
+    }
+    const devices = Object.keys(D).map((k) => ({ label: D[k].label, sub: D[k].sub, on: k === dev ? 'on' : '', sel: k === dev ? 'true' : 'false', pick: () => this.setState({ device: k }) }));
+    return {
+      themeClass: theme === 'dark' ? 'dark' : '',
+      mobile, desktop: !mobile,
+      devices, steps, deviceName: D[dev].label, prev: D[dev].prev,
+      total, correct, assessed, keyOk, keyTotal: keyIdx.length,
+      pct, pctW: pct + '%', verdict, verdictCls
+    };
+  }
+}
+</script>
+
+
+</body></html>

@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="th"><head>
+<meta charset="utf-8">
+<title>ฟอร์ม DRP · PharmCare OPD</title>
+<link rel="stylesheet" href="../theme.css">
+</head>
+<body>
+<x-dc>
+
+<div class="pc panel {{themeClass}}" style="width: 100%; min-height: 100%">
+  <div class="panel-hd">
+    <span class="care-ic" style="background: var(--warn-bg); color: var(--warn-tx)"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M10.5 3.5a5 5 0 0 1 7 7l-7 7a5 5 0 0 1-7-7z"></path><path d="m8.5 8.5 7 7"></path></svg></span>
+    <div style="flex: 1; min-width: 0; display: flex; flex-direction: column">
+      <h2 class="h2">ปัญหาจากการใช้ยา (DRP)</h2>
+      <span class="muted xs">นายสมมติ ทดสอบ · <span class="mono">HN 6900001</span></span>
+    </div>
+    <button type="button" class="btn btn-ic btn-sm" aria-label="ปิดแผง" style="width: 40px"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"></path></svg></button>
+  </div>
+
+  <div class="sec">
+    <span class="sec-t"><span class="step-n">1</span>ประเภทปัญหา</span>
+    <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px" role="radiogroup" aria-label="ประเภท DRP">
+      <sc-for list="{{types}}" as="t" hint-placeholder-count="8">
+        <button type="button" class="opt {{t.on}}" role="radio" aria-checked="{{t.sel}}" sc-camel-on-click="{{t.pick}}" style="font-size: 14px"><span class="radio"></span>{{t.label}}</button>
+      </sc-for>
+    </div>
+    <div class="field">
+      <label class="label" for="drpd">รายละเอียด / ยาที่เกี่ยวข้อง</label>
+      <textarea id="drpd" class="input">Insulin glargine ฉีดจริง 16 u (แพทย์สั่ง 18 u) · FBS 142 mg/dL · HbA1c 7.8%</textarea>
+    </div>
+  </div>
+
+  <div class="sec">
+    <div style="display: flex; align-items: center; justify-content: space-between">
+      <span class="sec-t"><span class="step-n">2</span>ความรุนแรง (NCC MERP)</span>
+      <span class="chip {{sevCls}}">ระดับ {{sev}}</span>
+    </div>
+    <div style="display: grid; grid-template-columns: repeat(9, minmax(0, 1fr)); gap: 6px" role="radiogroup" aria-label="ระดับความรุนแรง">
+      <sc-for list="{{sevs}}" as="s" hint-placeholder-count="9">
+        <button type="button" role="radio" aria-checked="{{s.sel}}" sc-camel-on-click="{{s.pick}}" style="min-height: 46px; border-radius: 11px; border: 1px solid {{s.bd}}; background: {{s.bg}}; color: {{s.fg}}; font-weight: 700; font-size: 16px; cursor: pointer">{{s.k}}</button>
+      </sc-for>
+    </div>
+    <div style="display: grid; grid-template-columns: 2fr 2fr 4fr 1fr; gap: 6px" class="xs muted">
+      <span style="border-top: 2px solid var(--line); padding-top: 4px">ไม่ถึงผู้ป่วย</span>
+      <span style="border-top: 2px solid var(--info-bd); padding-top: 4px">ไม่เกิดอันตราย</span>
+      <span style="border-top: 2px solid var(--warn-bd); padding-top: 4px">เกิดอันตราย</span>
+      <span style="border-top: 2px solid var(--dan-bd); padding-top: 4px">เสียชีวิต</span>
+    </div>
+    <div class="band info" style="font-weight: 500; font-size: 13.5px; align-items: flex-start">
+      <span class="tag" style="font-size: 12px">{{sev}}</span><span>{{sevDesc}}</span>
+    </div>
+  </div>
+
+  <div class="sec">
+    <span class="sec-t"><span class="step-n">3</span>การแก้ไข (เลือกได้หลายข้อ)</span>
+    <div style="display: flex; gap: 8px; flex-wrap: wrap">
+      <sc-for list="{{ints}}" as="i" hint-placeholder-count="6">
+        <button type="button" class="opt {{i.on}}" aria-pressed="{{i.sel}}" sc-camel-on-click="{{i.pick}}" style="min-height: 40px; font-size: 14px">
+          <sc-if value="{{i.isOn}}" hint-placeholder-val="{{ false }}"><svg class="ic ic-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 5 5 9-10"></path></svg></sc-if>{{i.label}}</button>
+      </sc-for>
+    </div>
+    <div class="field">
+      <label class="label" for="drpi">ข้อเสนอต่อแพทย์</label>
+      <textarea id="drpi" class="input" style="min-height: 60px">เสนอคงขนาด 18 u และทวนเทคนิคการหมุนขนาดยา</textarea>
+    </div>
+  </div>
+
+  <div class="sec">
+    <span class="sec-t"><span class="step-n">4</span>การตอบรับของแพทย์</span>
+    <div class="seg" role="radiogroup" aria-label="การตอบรับของแพทย์" style="display: flex">
+      <sc-for list="{{docs}}" as="d" hint-placeholder-count="4">
+        <button type="button" class="{{d.on}}" role="radio" aria-checked="{{d.sel}}" sc-camel-on-click="{{d.pick}}" style="flex: 1; font-size: 13.5px; padding: 0 8px">{{d.label}}</button>
+      </sc-for>
+    </div>
+  </div>
+
+  <div class="sec">
+    <span class="sec-t"><span class="step-n">5</span>ผลลัพธ์</span>
+    <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px" role="radiogroup" aria-label="ผลลัพธ์">
+      <sc-for list="{{outs}}" as="o" hint-placeholder-count="4">
+        <button type="button" class="opt {{o.on}}" role="radio" aria-checked="{{o.sel}}" sc-camel-on-click="{{o.pick}}" style="font-size: 14px"><span class="radio"></span>{{o.label}}</button>
+      </sc-for>
+    </div>
+    <sc-if value="{{pending}}" hint-placeholder-val="{{ true }}">
+      <div class="field">
+        <label class="label" for="due">วันนัดติดตามผล</label>
+        <input id="due" class="input" value="11 ม.ค. 2570">
+      </div>
+    </sc-if>
+  </div>
+
+  <div style="flex: 1"></div>
+  <div class="panel-ft" style="position: sticky; bottom: 0">
+    <button type="button" class="btn">ยกเลิก</button>
+    <button type="button" class="btn btn-pri" style="flex: 1; max-width: 220px">บันทึก DRP</button>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script="" data-props="{&quot;theme&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;light&quot;,&quot;dark&quot;],&quot;default&quot;:&quot;light&quot;},&quot;$preview&quot;:{&quot;width&quot;:520,&quot;height&quot;:1500}}">
+class Component extends DCLogic {
+  constructor(p) {
+    super(p);
+    this.state = { type: 3, sev: 'D', ints: ['ปรึกษาแพทย์', 'ให้คำแนะนำผู้ป่วย'], doc: 0, out: 3 };
+  }
+  renderVals() {
+    const theme = this.props.theme ?? 'light';
+    const S = this.state;
+    const typeList = ['ต้องการยาเพิ่ม', 'ได้รับยาที่ไม่จำเป็น', 'เลือกใช้ยาไม่เหมาะสม', 'ขนาดยาต่ำเกินไป', 'ขนาดยาสูงเกินไป', 'อาการไม่พึงประสงค์จากยา', 'อันตรกิริยาระหว่างยา', 'ไม่ร่วมมือในการใช้ยา'];
+    const types = typeList.map((label, i) => ({ label, on: S.type === i ? 'on' : '', sel: S.type === i ? 'true' : 'false', pick: () => this.setState({ type: i }) }));
+    const desc = {
+      A: 'มีเหตุการณ์ที่อาจทำให้เกิดความคลาดเคลื่อน',
+      B: 'เกิดความคลาดเคลื่อน แต่ยังไม่ถึงผู้ป่วย',
+      C: 'ถึงผู้ป่วย แต่ไม่ทำให้เกิดอันตราย',
+      D: 'ถึงผู้ป่วย ต้องเฝ้าระวังเพื่อยืนยันว่าไม่เกิดอันตราย',
+      E: 'เกิดอันตรายชั่วคราว ต้องได้รับการรักษา',
+      F: 'เกิดอันตรายชั่วคราว ต้องนอนโรงพยาบาลหรือนานขึ้น',
+      G: 'เกิดอันตรายถาวร',
+      H: 'เกิดอันตรายจนเกือบเสียชีวิต ต้องช่วยชีวิต',
+      I: 'เกิดความคลาดเคลื่อนจนผู้ป่วยเสียชีวิต'
+    };
+    const grp = (k) => ('AB'.includes(k) ? 'mute' : 'CD'.includes(k) ? 'info' : 'EFGH'.includes(k) ? 'warn' : 'bad');
+    const sevs = Object.keys(desc).map((k) => {
+      const on = S.sev === k;
+      return { k, sel: on ? 'true' : 'false', pick: () => this.setState({ sev: k }),
+        bg: on ? 'var(--pri)' : 'var(--card)', fg: on ? '#fff' : 'var(--tx)', bd: on ? 'var(--pri)' : 'var(--line)' };
+    });
+    const intList = ['ให้คำแนะนำผู้ป่วย', 'ปรึกษาแพทย์', 'ปรับขนาดยา', 'หยุดยา', 'เพิ่มยา', 'เปลี่ยนยา'];
+    const ints = intList.map((label) => {
+      const on = S.ints.includes(label);
+      return { label, on: on ? 'on' : '', isOn: on, sel: on ? 'true' : 'false', pick: () => this.setState({ ints: on ? S.ints.filter((x) => x !== label) : S.ints.concat(label) }) };
+    });
+    const docList = ['ยอมรับ', 'ยอมรับบางส่วน', 'ไม่ยอมรับ', 'ไม่ต้องปรึกษา'];
+    const docs = docList.map((label, i) => ({ label, on: S.doc === i ? 'on' : '', sel: S.doc === i ? 'true' : 'false', pick: () => this.setState({ doc: i }) }));
+    const outList = ['แก้ไขได้', 'แก้ไขได้บางส่วน', 'แก้ไขไม่ได้', 'รอติดตามผล'];
+    const outs = outList.map((label, i) => ({ label, on: S.out === i ? 'on' : '', sel: S.out === i ? 'true' : 'false', pick: () => this.setState({ out: i }) }));
+    return {
+      themeClass: theme === 'dark' ? 'dark' : '',
+      types, sevs, sev: S.sev, sevDesc: desc[S.sev], sevCls: grp(S.sev), ints, docs, outs, pending: S.out === 3
+    };
+  }
+}
+</script>
+
+
+</body></html>
