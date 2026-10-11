@@ -1,0 +1,21 @@
+import { z } from 'zod'
+
+const schema = z.object({
+  // pharmcare database, connected as pharmcare_app (no DELETE privilege)
+  DATABASE_URL: z.url(),
+  // pharmshift's `postgres` database, same role — column-level SELECT on public.users only
+  AUTH_DATABASE_URL: z.url(),
+  SESSION_JWT_SECRET: z.string().min(32, 'generate with: openssl rand -base64 48'),
+  // his-relay base URL; unset means patient name/clinic are typed in manually
+  HIS_RELAY_URL: z.union([z.url(), z.literal('')]).optional().transform((v) => v || undefined),
+})
+
+export type Env = z.infer<typeof schema>
+
+let cached: Env | undefined
+
+// Validated lazily so `next build` works without runtime secrets.
+export function env(): Env {
+  if (!cached) cached = schema.parse(process.env)
+  return cached
+}

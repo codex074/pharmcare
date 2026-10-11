@@ -8,7 +8,7 @@
 |---|---|---|
 | 0 | สร้าง repo + โครงโฟลเดอร์ | ✅ เสร็จ |
 | – | นำดีไซน์จาก Claude Design เข้า repo (`docs/design/`) | ✅ เสร็จ |
-| 1 | Scaffold Next.js + theme.css จากดีไซน์ + Drizzle + docker compose สำหรับ dev | ⬜ |
+| 1 | Scaffold Next.js + theme.css จากดีไซน์ + Drizzle + docker compose สำหรับ dev | ✅ เสร็จ |
 | 2 | Auth: login / logout / requireUser / rate limit | ⬜ |
 | 3 | Schema + migrations + triggers + grants | ⬜ |
 | 4 | ฟังก์ชันคำนวณ (eGFR, TTR, Naranjo, คะแนนเทคนิค) + checklist + unit tests | ⬜ |
@@ -32,4 +32,5 @@
 ## บันทึก
 
 - 2026-10-12: สร้าง repo
+- 2026-10-12: ขั้น 1 เสร็จ — Next.js 16.3.8 (แทน 14 ที่หมดซัพพอร์ต), theme.css + Noto Sans Thai, ฐานข้อมูล dev จำลองโครง production (`npm run db:up`), `/api/health` ตอบ 503 เมื่อ DB ล่ม, lint/typecheck/build ผ่าน
 - 2026-10-12: นำดีไซน์ 20 หน้าจอ + theme.css + โลโก้เข้า repo เลิกใช้ Tailwind ใช้ CSS จากดีไซน์แทน
