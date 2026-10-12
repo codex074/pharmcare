@@ -2,7 +2,6 @@
 
 import { redirect } from 'next/navigation'
 import { requireUser } from '@/lib/auth/dal'
-import { CLINIC } from '@/lib/codes'
 import { withActor } from '@/lib/db'
 import { patients } from '@/lib/db/schema'
 import { parseFullName } from '@/lib/patients/name'
@@ -30,7 +29,7 @@ export async function registerPatient(_prev: RegisterState, fd: FormData): Promi
 
   const v = parsed.data
   const name = parseFullName(v.fullName)!
-  const target = `/patients/${encodeURIComponent(v.hn)}${v.clinic ? `?clinic=${v.clinic}` : ''}`
+  const target = `/patients/${encodeURIComponent(v.hn)}${v.clinic ? `?clinic=${encodeURIComponent(v.clinic)}` : ''}`
   try {
     await withActor(user, (tx) =>
       tx.insert(patients).values({
@@ -41,8 +40,8 @@ export async function registerPatient(_prev: RegisterState, fd: FormData): Promi
         sex: v.sex,
         birthDate: v.age == null ? null : birthDateFromAge(v.age, bangkokDate()),
         birthDateEstimated: v.age != null,
-        mainClinicCode: v.clinic,
-        mainClinicName: v.clinic ? CLINIC[v.clinic] : null,
+        mainClinicCode: null,
+        mainClinicName: v.clinic,
         allergySummary: v.allergy,
       }),
     )

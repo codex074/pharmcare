@@ -37,3 +37,6 @@ npm-debug.log*
 coverage/
 .vscode/
 .idea/
+
+# local API notes (internal IPs/endpoints)
+API-reference.md

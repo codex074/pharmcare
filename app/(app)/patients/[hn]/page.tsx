@@ -37,7 +37,7 @@ export default async function PatientPage({ params, searchParams }: Props) {
 
 async function NewPatient({ hn, his, sp }: { hn: string; his: HisResult; sp: PatientParams }) {
   const found = his.status === 'found' ? his.patient : null
-  const hisClinic = found?.clinics.find((c) => c.code in CLINIC)?.code
+  const hisClinic = found?.clinics[0]?.name
   return (
     <>
       <PageHeader title="ผลการค้นหา" back={{ href: '/', label: 'ค้นหา' }} />
@@ -66,7 +66,7 @@ async function NewPatient({ hn, his, sp }: { hn: string; his: HisResult; sp: Pat
                 fullName: found ? fullName(found) : undefined,
                 sex: found?.sex ?? undefined,
                 age: found?.birthDate ? String(ageOn(found.birthDate, bangkokDate())) : undefined,
-                clinic: sp.clinic && sp.clinic in CLINIC ? sp.clinic : hisClinic,
+                clinic: sp.clinic ?? hisClinic,
               }}
             />
           </div>

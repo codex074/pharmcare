@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { useActionState, useState } from 'react'
 import { Icon } from '@/components/icons'
-import { CLINIC, SEX } from '@/lib/codes'
+import { SEX } from '@/lib/codes'
 import { registerPatient, type RegisterState } from './actions'
 
 type Prefill = { fullName?: string; sex?: string; age?: string; clinic?: string }
@@ -81,28 +81,22 @@ export function RegisterForm({ hn, prefill, fromHis }: { hn: string; prefill: Pr
         </div>
       </div>
 
-      <fieldset style={{ border: 0, padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: 10 }}>
-        <legend className="label" style={{ marginBottom: 8 }}>
-          คลินิกวันนี้ <span className="faint xs" style={{ fontWeight: 500 }}>เลือกเอง</span>
-        </legend>
-        <div role="radiogroup" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(180px, 100%), 1fr))', gap: 10 }}>
-          {Object.entries(CLINIC).map(([code, text]) => (
-            <button
-              key={code}
-              type="button"
-              className={`opt${clinic === code ? ' on' : ''}`}
-              role="radio"
-              aria-checked={clinic === code}
-              onClick={() => setClinic(clinic === code ? '' : code)}
-            >
-              <span className="radio" />
-              {text}
-            </button>
-          ))}
-        </div>
-        <input type="hidden" name="clinic" value={clinic} />
-        {e.clinic && <span className="err-tx">{e.clinic}</span>}
-      </fieldset>
+      <div className="field">
+        <label className="label" htmlFor="clinic" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          คลินิกวันนี้{fromHis && prefill.clinic && <span className="tag">จาก HIS</span>}
+        </label>
+        <input
+          id="clinic"
+          name="clinic"
+          className={`input${e.clinic ? ' err' : ''}`}
+          placeholder="เช่น อายุรกรรม, คลินิกเบาหวาน หรือเว้นว่าง"
+          value={clinic}
+          onChange={(ev) => setClinic(ev.target.value)}
+          aria-invalid={!!e.clinic}
+          aria-describedby={describe('clinic')}
+        />
+        {e.clinic && <span id="clinic-err" className="err-tx">{e.clinic}</span>}
+      </div>
 
       <div className="field">
         <label className="label" htmlFor="alg">

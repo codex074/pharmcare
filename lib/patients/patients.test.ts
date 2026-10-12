@@ -66,12 +66,16 @@ describe('registerSchema', () => {
   })
 
   it('reports each bad field once, in Thai', () => {
-    const r = registerSchema.safeParse({ ...ok, hn: '', fullName: 'นายสมมติ', age: '7.5', clinic: 'nope' })
+    const r = registerSchema.safeParse({ ...ok, hn: '', fullName: 'นายสมมติ', age: '7.5' })
     const errs = fieldErrors(r.error!)
     expect(errs.hn).toBe('กรอก HN')
     expect(errs.fullName).toMatch(/นามสกุล/)
     expect(errs.age).toMatch(/จำนวนเต็ม/)
-    expect(errs.clinic).toBeDefined()
+  })
+
+  it('takes the clinic as free text from HIS', () => {
+    const r = registerSchema.safeParse({ ...ok, clinic: 'อายุรกรรมทั่วไป' })
+    expect(r.success && r.data.clinic).toBe('อายุรกรรมทั่วไป')
   })
 
   it('turns an age into 1 January of the derived year', () => {

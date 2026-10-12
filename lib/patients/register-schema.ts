@@ -1,5 +1,5 @@
 import { z } from 'zod'
-import { CLINIC, codesOf, SEX } from '@/lib/codes'
+import { codesOf, SEX } from '@/lib/codes'
 import { hnError, normalizeHn } from './hn'
 import { parseFullName } from './name'
 
@@ -39,7 +39,7 @@ export const registerSchema = z.object({
       }
       return n
     }),
-  clinic: z.union([z.enum(codesOf(CLINIC)), z.literal('').transform(() => null)]),
+  clinic: optionalText(100),
   allergy: optionalText(500),
 })
 

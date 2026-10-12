@@ -16,12 +16,12 @@
 | 6 | แฟ้มผู้ป่วย + ฟอร์มบริบาลทุกชนิด | ✅ เสร็จ |
 | 7 | ตัวชี้วัด, ส่งออก CSV, ประวัติแก้ไข | ✅ เสร็จ |
 | 8 | Deploy: pve1 → mirror VPS → failover → backup → restore drill | ⬜ |
-| 9 | `his-relay` + เชื่อม API ผู้ป่วยของโรงพยาบาล | ⬜ |
+| 9 | `his-relay` + เชื่อม API ผู้ป่วยของโรงพยาบาล | 🔄 ฝั่งแอป + ร่าง relay (`relay/his-relay.mjs`) เขียนแล้ว — รัน/ทดสอบกับของจริง + deploy ยังรอ |
 
 ## รอผู้ใช้
 
 - [ ] ยืนยันขั้นสำคัญใน checklist ยาสูด (ดูบันทึก 2026-10-12) และการใช้ข้อความจาก MED Library
-- [ ] ยืนยันว่าการอนุมัติ PDPA ของโรงพยาบาลครอบคลุมการเก็บชื่อ-สกุลเต็ม
+- [x] ยืนยันว่าการอนุมัติ PDPA ของโรงพยาบาลครอบคลุมการเก็บชื่อ-สกุลเต็ม (ผู้ใช้ยืนยัน 2026-10-12)
 - [ ] เปิด Swagger ของโปรแกรมคิว (`/api/docs`) ดูว่ามี endpoint ค้นคลินิกจาก HN หรือ VN ไหม
 - [ ] ขอ token ของ API กลาง (`/api/hosxp/patient`) และ service account ของโปรแกรมคิว
 - [ ] เลือกเครื่องในโรงพยาบาลที่จะลง `his-relay`
@@ -49,3 +49,6 @@
   - ต่างจากเว็บ: ขั้น "พ่นทิ้งเมื่อหลอดใหม่" ของ MDI ย้ายไปอยู่ในคำแนะนำ (เป็นขั้นที่ทำเฉพาะบางครั้ง ถ้าเป็นขั้นที่ต้องติ๊กจะทำให้คะแนนผิด) MDI จึงเหลือ 6 ขั้น
   - รอผู้ใช้ยืนยัน: ขั้นสำคัญ (เว็บไม่ได้ระบุ ระบบเลือกขั้นเตรียมยา/ปล่อยยา และขั้นสูดยา) และการใช้ข้อความจากเว็บภายนอกในแอปของโรงพยาบาล
 - 2026-10-12: นำดีไซน์ 20 หน้าจอ + theme.css + โลโก้เข้า repo เลิกใช้ Tailwind ใช้ CSS จากดีไซน์แทน
+- 2026-10-12: ขั้น 9 (ฝั่งแอป) — `QueueRelayLookup` ใน `lib/his/index.ts` ยิง `GET {HIS_RELAY_URL}/patient?hn=` แนบ Cloudflare Access service token + header secret (`X-Relay-Secret`), map สถานะ 200/404/401/403/5xx/ตอบไม่ใช่ JSON เป็น found/not_found/unavailable, ตรวจ body ด้วย zod ให้ตรง type `HisPatient`, `patientLookup()` เลือก lookup นี้อัตโนมัติเมื่อตั้ง `HIS_RELAY_URL`, เพิ่ม env 3 ตัว (`lib/env.ts`, `.env.example`), unit test `lib/his/his.test.ts` 7 เคส
+  - ติดตั้ง Node v24.20.0 + git 2.55.0 บนเครื่อง dev แล้ว, `npm install` + lint/typecheck/test(104)/build ผ่านครบ, ยังไม่ commit/push (โฟลเดอร์ยังไม่ใช่ git repo / ยังไม่มี remote)
+  - ค้างรอ: `deploy/PLAN.md` (gitignore ไม่ติดมากับ zip) และ `PATIENT-LOOKUP-API.md` เพื่อสร้างตัว `his-relay` จริงให้ตรง contract — ตอนนี้ contract ยึดตาม type `HisPatient` ในrepo, ชื่อ header auth (`X-Relay-Secret`) เป็นค่าสมมติรอยืนยัน

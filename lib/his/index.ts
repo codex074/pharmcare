@@ -2,6 +2,9 @@
 // The app must always work without it: every result except `found` means
 // "type the name and pick the clinic by hand".
 
+import { z } from 'zod'
+import { env } from '@/lib/env'
+
 export type HisClinic = { code: string; name: string; visitDate: string }
 
 export type HisPatient = {
@@ -32,9 +35,83 @@ export class NoopLookup implements PatientLookup {
 
 export const HIS_TIMEOUT_MS = 3000
 
+// ─── Relay-backed lookup (step 9, app side) ─────────────────────────────────
+// Contract with his-relay — GET {HIS_RELAY_URL}/patient?hn=<hn>:
+//   200 + HisPatient JSON  → found
+//   200 + null / {}        → not_found
+//   404                    → not_found
+//   401 / 403              → unavailable (Cloudflare Access / header secret)
+//   anything else, non-JSON, network error → unavailable
+// his-relay owns the mapping from HOSxP onto this shape (full name =
+// pname + fname + " " + lname; sex normalized to male/female; clinics = today's
+// visits). The app only consumes the shape below. The relay program and its
+// deployment are gated on deploy/PLAN.md and are not built here.
+
+const relayClinicSchema = z.object({
+  code: z.string(),
+  name: z.string(),
+  visitDate: z.string(),
+})
+
+const relayPatientSchema = z.object({
+  hn: z.string(),
+  prefix: z.string().nullish().transform((v) => v ?? null),
+  firstName: z.string(),
+  lastName: z.string(),
+  sex: z.enum(['male', 'female']).nullish().transform((v) => v ?? null),
+  birthDate: z.string().nullish().transform((v) => v ?? null),
+  clinics: z.array(relayClinicSchema).nullish().transform((v) => v ?? []),
+})
+
+export type RelayAuth = {
+  cfAccessClientId?: string
+  cfAccessClientSecret?: string
+  headerSecret?: string
+}
+
+export class QueueRelayLookup implements PatientLookup {
+  constructor(
+    private readonly baseUrl: string,
+    private readonly auth: RelayAuth = {},
+  ) {}
+
+  async lookup(hn: string, signal: AbortSignal): Promise<HisResult> {
+    const url = `${this.baseUrl.replace(/\/+$/, '')}/patient?hn=${encodeURIComponent(hn)}`
+    const headers: Record<string, string> = { accept: 'application/json' }
+    if (this.auth.cfAccessClientId) headers['CF-Access-Client-Id'] = this.auth.cfAccessClientId
+    if (this.auth.cfAccessClientSecret) headers['CF-Access-Client-Secret'] = this.auth.cfAccessClientSecret
+    if (this.auth.headerSecret) headers['X-Relay-Secret'] = this.auth.headerSecret
+
+    const res = await fetch(url, { headers, signal, cache: 'no-store' })
+
+    if (res.status === 404) return { status: 'not_found' }
+    if (res.status === 401 || res.status === 403)
+      return { status: 'unavailable', reason: `relay auth failed (${res.status})` }
+    if (!res.ok) return { status: 'unavailable', reason: `relay HTTP ${res.status}` }
+
+    let body: unknown
+    try {
+      body = await res.json()
+    } catch {
+      return { status: 'unavailable', reason: 'relay sent non-JSON' }
+    }
+    if (body == null || (typeof body === 'object' && Object.keys(body as object).length === 0))
+      return { status: 'not_found' }
+
+    const parsed = relayPatientSchema.safeParse(body)
+    if (!parsed.success) return { status: 'unavailable', reason: 'bad relay response' }
+    return { status: 'found', patient: parsed.data }
+  }
+}
+
 export function patientLookup(): PatientLookup {
-  // QueueRelayLookup is added in step 9, selected when HIS_RELAY_URL is set.
-  return new NoopLookup()
+  const e = env()
+  if (!e.HIS_RELAY_URL) return new NoopLookup()
+  return new QueueRelayLookup(e.HIS_RELAY_URL, {
+    cfAccessClientId: e.HIS_RELAY_CF_ACCESS_CLIENT_ID,
+    cfAccessClientSecret: e.HIS_RELAY_CF_ACCESS_CLIENT_SECRET,
+    headerSecret: e.HIS_RELAY_SECRET,
+  })
 }
 
 // Never throws and never waits longer than the timeout.
