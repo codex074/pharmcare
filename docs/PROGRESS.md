@@ -11,7 +11,7 @@
 | 1 | Scaffold Next.js + theme.css จากดีไซน์ + Drizzle + docker compose สำหรับ dev | ✅ เสร็จ |
 | 2 | Auth: login / logout / requireUser / rate limit | ✅ เสร็จ |
 | 3 | Schema + migrations + triggers + grants | ✅ เสร็จ |
-| 4 | ฟังก์ชันคำนวณ (eGFR, TTR, Naranjo, คะแนนเทคนิค) + checklist + unit tests | ⬜ |
+| 4 | ฟังก์ชันคำนวณ (eGFR, TTR, Naranjo, คะแนนเทคนิค) + checklist + unit tests | ✅ เสร็จ |
 | 5 | หน้ากรอก HN + การ์ดผู้ป่วย + ประวัติ + เลือกประเภทการบริบาล | ⬜ |
 | 6 | แฟ้มผู้ป่วย + ฟอร์มบริบาลทุกชนิด | ⬜ |
 | 7 | ตัวชี้วัด, ส่งออก CSV, ประวัติแก้ไข | ⬜ |
@@ -36,4 +36,6 @@
 - 2026-10-12: ขั้น 2 เสร็จ — login ด้วยบัญชี PharmShift (เฉพาะเภสัช/admin), rate limit 5/บัญชี 30/IP ใน 15 นาที, session 12 ชม. แบบ sliding, ถอนสิทธิ์ใน PharmShift แล้วหลุดภายใน 5 นาที, ตาราง `login_attempts` (app เพิ่ม/อ่านได้ ลบ/แก้ไม่ได้) ทดสอบกับ dev DB ครบ 8 บัญชี
 - 2026-10-12: ขั้น 3 เสร็จ — ตาราง patients, visits, drps, high_alert_monitoring, adrs, technique_assessments, audit_log ฟิลด์ตามดีไซน์ (กฎ/ช่วงค่าตามต้นแบบ) ค่าที่ใช้คำนวณเก็บเป็นรหัส (`lib/codes.ts`) trigger บังคับ: ต้องระบุผู้บันทึก, แก้ได้เฉพาะเจ้าของ (ยกเว้นซิงก์ชื่อจาก HIS), ยกเลิกต้องมีเหตุผลและย้อนไม่ได้, audit log เขียนเอง ทดสอบ `npm run test:db` 24 ข้อผ่าน
   - ต่างจากแผน: app อ่าน `audit_log` ได้อย่างเดียว (แผนเดิมให้ INSERT ด้วย) เพื่อไม่ให้ปลอมประวัติได้, HN ซ้ำได้ถ้ารายการเดิมถูกยกเลิก, กรอกอายุเองเก็บเป็นวันเกิดประมาณ (`birth_date_estimated`)
+- 2026-10-12: ขั้น 4 เสร็จ — `lib/calc/` (eGFR CKD-EPI 2021, TTR Rosendaal, Naranjo, คะแนนเทคนิค, ถึงเป้า) + `lib/checklists.ts` อุปกรณ์ 8 ชนิด ผลตรงกับสูตรต้นแบบ (TTR ของ HN 6900002 = 58%, eGFR ชาย 70 ปี SCr 1.3 = 59) ข้อความ checklist/Naranjo ตรงกับต้นแบบทุกตัวอักษร unit test 50 ข้อ
+  - ต่างจากต้นแบบ: eGFR ไม่คำนวณให้อายุต่ำกว่า 18 ปี (สูตรใช้กับผู้ใหญ่) · validation ด้วย zod ย้ายไปทำพร้อมฟอร์มในขั้น 6
 - 2026-10-12: นำดีไซน์ 20 หน้าจอ + theme.css + โลโก้เข้า repo เลิกใช้ Tailwind ใช้ CSS จากดีไซน์แทน
