@@ -28,7 +28,8 @@
 }
 .pc *,.pc *::before,.pc *::after{box-sizing:border-box}
 .pc h1,.pc h2,.pc h3,.pc h4,.pc p{margin:0}
-.pc button,.pc input,.pc select,.pc textarea{font:inherit;color:inherit}
+/* :where() keeps this reset below .btn-pri / .btn:hover etc. in specificity */
+:where(.pc) :is(button,input,select,textarea){font:inherit;color:inherit}
 .pc a{color:var(--pri-tx)}
 
 .ic{width:20px;height:20px;flex:none;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
