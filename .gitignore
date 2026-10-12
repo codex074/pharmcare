@@ -40,3 +40,6 @@ coverage/
 
 # local API notes (internal IPs/endpoints)
 API-reference.md
+
+# machine-specific preview launcher
+.claude/launch.json

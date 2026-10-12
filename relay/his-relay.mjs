@@ -21,6 +21,13 @@
 // shared-secret header is a second, app-level check and is required here.
 
 import { createServer } from 'node:http'
+import { fileURLToPath } from 'node:url'
+
+// Load relay/.env if present so the service doesn't need env typed each start.
+// Ambient environment variables still win over the file.
+try {
+  process.loadEnvFile(fileURLToPath(new URL('.env', import.meta.url)))
+} catch {}
 
 const PORT = Number(process.env.RELAY_PORT || 4000)
 const API = (process.env.QUEUE_API_URL || '').replace(/\/+$/, '')
