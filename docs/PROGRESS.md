@@ -15,7 +15,7 @@
 | 5 | หน้ากรอก HN + การ์ดผู้ป่วย + ประวัติ + เลือกประเภทการบริบาล | ✅ เสร็จ |
 | 6 | แฟ้มผู้ป่วย + ฟอร์มบริบาลทุกชนิด | ✅ เสร็จ |
 | 7 | ตัวชี้วัด, ส่งออก CSV, ประวัติแก้ไข | ✅ เสร็จ |
-| 8 | Deploy pharmcare-web (VPS) + DB production + nginx/tunnel + failover/backup | 🔄 B0–B1 เสร็จ (role + DB `pharmcare` บน CT 103, replicate ไป VPS แล้ว) — รออนุมัติ B2 (เว็บบน CT 103) |
+| 8 | Deploy pharmcare-web (VPS) + DB production + nginx/tunnel + failover/backup | 🔄 B0–B2 เสร็จ (DB + เว็บ `pharmcare-web` รันบน CT 103 แล้ว ยังไม่เปิดสู่ภายนอก) — ถัดไป B3 ผูก hostname ใน tunnel |
 | 9 | `his-relay` + เชื่อม API ผู้ป่วยของโรงพยาบาล | ✅ relay รันจริงบนเครื่อง รพ. (always-on) + Cloudflare Tunnel/Access เสร็จ — ดึงชื่อ+คลินิกจาก HOSxP ได้ |
 
 ## รอผู้ใช้
@@ -27,6 +27,8 @@
 - [x] เลือกเครื่องในโรงพยาบาลที่จะลง `his-relay` (เครื่อง OPD Windows, Scheduled Task S4U, 2026-10-12)
 - [x] ตัดสินใจที่วาง DB production → **CT 103** ใน cluster ของ PharmShift ตาม CLAUDE.md (2026-10-12)
 - [ ] อนุมัติ production ทีละชุด (B0 ตรวจ → B1 role/DB → B2 เว็บบน CT 103 → B3 hostname ใน tunnel → B4 VPS → B5 failover.sh) ตาม `deploy/PLAN.md`
+- [ ] **relay ออฟไลน์**: `his-relay.codex074.com` ตอบ 530 / Cloudflare error 1033 (tunnel ไม่มี connector) — ตรวจเครื่อง OPD ว่าเปิดอยู่และ cloudflared รันอยู่
+- [ ] หมุน secret ที่เคยพิมพ์ในแชต: Cloudflare Access service token ของ relay และ `RELAY_SHARED_SECRET` (พิมพ์ในแชต 2026-10-12)
 - [ ] เปลี่ยน relay ไปใช้ **service account แยก** ของ queue API (ตอนนี้ใช้ login ส่วนตัว `pharsurg1` — ควรเปลี่ยน + หมุนรหัส เพราะเคยพิมพ์ในแชต)
 - [ ] ให้ IT รพ. **whitelist `*.codex074.com` ใน FortiGate** เพื่อให้ PC รพ. เปิดหน้าเว็บ pharmcare ได้ (relay ไม่ต้อง เพราะ VPS เป็นคนเรียก)
 
@@ -99,4 +101,6 @@ Mac อยู่นอก รพ. → เรียก relay ผ่าน Cloudfl
 - 2026-10-12: ขั้น 8 B1 เสร็จ (ผู้ใช้อนุมัติ) — สร้าง `pharmcare_owner` (limit 2), `pharmcare_app` (limit 10, timeout 15s), DB `pharmcare` บน CT 103 รหัสสุ่มอยู่ใน `deploy/secrets.env` (Mac, gitignore) และ `/root/pharmcare-setup/` บน CT 103 (600, ลบหลัง B2) ไม่เคยผ่าน command line
   - ตรวจผ่าน docker network: app login ได้, รหัสผิดถูกปฏิเสธ, อ่าน `users` ได้ 116 แถวเฉพาะคอลัมน์ที่อนุญาต (`select *` และตารางอื่นเช่น `shifts` ถูกปฏิเสธ), สร้างตารางใน `pharmcare` ไม่ได้, ไม่ใช่ superuser/bypassrls, ไม่เป็นสมาชิก role ใด, `anon`/`authenticated`/`authenticator` connect `pharmcare` ไม่ได้
   - VPS standby: `pharmcare` + 2 role replicate มาแล้ว (streaming, lag 4 วินาที) · PharmShift API 200, หน้าเว็บ 200
+- 2026-10-12: ขั้น 8 B2 เสร็จ (ผู้ใช้อนุมัติ) — image `5239e18` (amd64) ส่งไป CT 103, `/opt/pharmcare/` (compose, `pharmcare-web.env` 600, `migrate.env` 600, `.env` tag), migration 7 ไฟล์ผ่าน (9 ตาราง), `pharmcare-web` healthy บน `deploy_default` (RAM ~50 MB / limit 512 MB), ลบไฟล์รหัสชั่วคราว `/root/pharmcare-setup` แล้ว (shred) · PharmShift API 200 ×5 + เว็บ 200, monitor บน VPS ไม่มี fail
+  - HIS: ใส่ค่า relay ครบใน env แล้ว แต่ relay ตอบ 530 (error 1033 = tunnel ฝั่งเครื่อง รพ. ไม่ได้เชื่อมต่อ) ทั้งจาก Mac และจาก container — แอปใช้กรอกชื่อ/คลินิกเองไปก่อน เมื่อ relay กลับมาไม่ต้อง restart (env ครบแล้ว)
 
