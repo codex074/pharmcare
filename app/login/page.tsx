@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import Image from 'next/image'
 import { redirect } from 'next/navigation'
 import { currentUser } from '@/lib/auth/dal'
+import { getTheme, pcClass } from '@/lib/theme'
 import { LoginForm } from './login-form'
 
 export const metadata: Metadata = { title: 'เข้าสู่ระบบ' }
@@ -9,9 +10,10 @@ export const metadata: Metadata = { title: 'เข้าสู่ระบบ' }
 export default async function LoginPage({ searchParams }: { searchParams: Promise<{ revoked?: string }> }) {
   if (await currentUser()) redirect('/')
   const { revoked } = await searchParams
+  const theme = await getTheme()
 
   return (
-    <div className="pc" style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '40px 16px' }}>
+    <div className={pcClass(theme)} style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '40px 16px' }}>
       <div style={{ width: '100%', maxWidth: 420, display: 'flex', flexDirection: 'column', gap: 22 }}>
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12, textAlign: 'center' }}>
           <Image

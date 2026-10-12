@@ -8,6 +8,17 @@ export const codesOf = <T extends Options>(o: T) => Object.keys(o) as (keyof T &
 
 export const SEX = { male: 'ชาย', female: 'หญิง' } as const
 
+// Clinic picked by hand when HIS can't say which clinic the patient attends today.
+// Stored as clinic_code + clinic_name snapshots (not CHECKed: HIS clinic codes differ).
+export const CLINIC = {
+  dm: 'เบาหวาน',
+  ht: 'ความดันโลหิตสูง',
+  wf: 'วาร์ฟาริน',
+  asthma: 'หอบหืด / COPD',
+  ckd: 'ไตเรื้อรัง',
+  other: 'อื่น ๆ',
+} as const
+
 // ---- Visit
 export const ADHERENCE_METHOD = {
   pill_count: 'นับเม็ดยา',

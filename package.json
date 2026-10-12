@@ -14,7 +14,8 @@
     "db:reset": "docker compose -f dev/docker-compose.yml down -v && docker compose -f dev/docker-compose.yml up -d",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
-    "test:db": "vitest run --config vitest.db.config.ts"
+    "test:db": "vitest run --config vitest.db.config.ts",
+    "db:seed": "node dev/seed.mjs"
   },
   "dependencies": {
     "bcryptjs": "3.0.3",

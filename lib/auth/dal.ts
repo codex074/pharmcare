@@ -2,11 +2,19 @@ import { cache } from 'react'
 import { cookies } from 'next/headers'
 import { redirect } from 'next/navigation'
 import { env } from '@/lib/env'
+import { initials } from '@/lib/patients/name'
 import { accessDenial, displayName } from './policy'
 import { SESSION_COOKIE, verifySession } from './session'
 import { findAccountById } from './store'
 
-export type CurrentUser = { id: string; phaId: string; name: string; role: string }
+export type CurrentUser = {
+  id: string
+  phaId: string
+  name: string // ภญ.สมใจ รักษ์ยา
+  shortName: string // ภญ.สมใจ
+  initials: string // สร
+  role: string
+}
 
 // Role / is_active are re-read from PharmShift at most every 5 minutes per user,
 // so revoking someone there locks them out of PharmCare within 5 minutes.
@@ -20,7 +28,14 @@ async function loadUser(id: string): Promise<CurrentUser | null> {
   const account = await findAccountById(id)
   const user =
     account && !accessDenial(account)
-      ? { id: account.id, phaId: account.pha_id, name: displayName(account), role: account.role }
+      ? {
+          id: account.id,
+          phaId: account.pha_id,
+          name: displayName(account),
+          shortName: `${account.prefix ?? ''}${account.f_name}`,
+          initials: initials(account.f_name, account.l_name),
+          role: account.role,
+        }
       : null
   accountCache.set(id, { user, at: Date.now() })
   return user

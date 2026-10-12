@@ -26,5 +26,5 @@ export async function proxy(request: NextRequest) {
 
 export const config = {
   // Public: health check (container + failover), static assets, the logo.
-  matcher: ['/((?!api/health|_next/static|_next/image|favicon.ico|logo-utth.png).*)'],
+  matcher: ['/((?!api/health|_next/static|_next/image|favicon.ico|icon.png|logo-utth.png).*)'],
 }
