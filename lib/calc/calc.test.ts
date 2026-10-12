@@ -131,15 +131,23 @@ describe('technique score', () => {
 })
 
 describe('checklists', () => {
-  it('has a checklist for every device code, matching the prototype step counts', () => {
+  it('has a checklist for every device code, with the expected steps / critical steps', () => {
     const counts = Object.fromEntries(
       Object.entries(CHECKLISTS).map(([k, c]) => [k, `${c.steps.length}/${c.steps.filter((s) => s.critical).length}`]),
     )
     expect(Object.keys(CHECKLISTS).sort()).toEqual(Object.keys(DEVICE).sort())
     expect(counts).toEqual({
-      pen: '11/4', syringe: '10/3', mdi: '7/2', spacer: '6/2',
-      accuhaler: '7/2', turbuhaler: '7/2', respimat: '6/1', nasal: '5/1',
+      // prototype
+      pen: '11/4', syringe: '10/3', spacer: '6/2', nasal: '5/1',
+      // MED Library (MDI priming moved to the tip)
+      mdi: '6/2', accuhaler: '6/2', turbuhaler: '6/2', respimat: '6/2', ellipta: '6/2', easyhaler: '6/2',
+      spiromax: '6/2', nexthaler: '6/2', airmaster: '6/2', handihaler: '8/3', breezhaler: '8/2', nebulizer: '6/2',
     })
+  })
+
+  it('keeps teaching guidance (errors, tip) out of the scored snapshot', () => {
+    expect(CHECKLISTS.breezhaler.errors?.length).toBeGreaterThan(0)
+    expect(Object.keys(buildStepSnapshot('breezhaler')[0]).sort()).toEqual(['critical', 'result', 'text'])
   })
 
   it('snapshots are independent copies', () => {

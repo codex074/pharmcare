@@ -180,9 +180,17 @@ export const DEVICE = {
   syringe: 'อินซูลินขวด + กระบอกฉีด',
   mdi: 'ยาสูด MDI',
   spacer: 'ยาสูด MDI + spacer',
-  accuhaler: 'Accuhaler (DPI)',
+  accuhaler: 'Accuhaler / Diskus (DPI)',
   turbuhaler: 'Turbuhaler (DPI)',
   respimat: 'Respimat (soft mist)',
+  ellipta: 'Ellipta (DPI)',
+  easyhaler: 'Easyhaler (DPI)',
+  spiromax: 'Spiromax (DPI)',
+  nexthaler: 'NEXThaler (DPI)',
+  airmaster: 'Airmaster (DPI)',
+  handihaler: 'HandiHaler (แคปซูล)',
+  breezhaler: 'Breezhaler (แคปซูล)',
+  nebulizer: 'เครื่องพ่นละอองยา (nebulizer)',
   nasal: 'ยาพ่นจมูก',
 } as const
 

@@ -1,0 +1,2 @@
+ALTER TABLE "technique_assessments" DROP CONSTRAINT "technique_device";--> statement-breakpoint
+ALTER TABLE "technique_assessments" ADD CONSTRAINT "technique_device" CHECK ("technique_assessments"."device" in ('pen', 'syringe', 'mdi', 'spacer', 'accuhaler', 'turbuhaler', 'respimat', 'ellipta', 'easyhaler', 'spiromax', 'nexthaler', 'airmaster', 'handihaler', 'breezhaler', 'nebulizer', 'nasal'));

@@ -43,6 +43,13 @@
       "when": 1791794074118,
       "tag": "0005_export_log_grants",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1791796368692,
+      "tag": "0006_technique_devices",
+      "breakpoints": true
     }
   ]
 }

@@ -5,10 +5,31 @@ import { Icon } from '@/components/icons'
 import { Choice, Err, Panel, Section, Seg, TextField } from '@/components/form-controls'
 import { scoreTechnique, type StepResult } from '@/lib/calc/technique'
 import { CARE_KINDS } from '@/lib/care-kinds'
-import { buildStepSnapshot, educationTopics, type Device } from '@/lib/checklists'
+import { buildStepSnapshot, CHECKLIST_SOURCE, CHECKLISTS, educationTopics, type Device, type DeviceGroup } from '@/lib/checklists'
 import { DEVICE, DRUG_USER, TECHNIQUE_PHASE } from '@/lib/codes'
 import type { TechValues } from '@/lib/records/form-values'
 import { useSave, type FormBase } from './use-save'
+
+const DEVICE_GROUPS: [DeviceGroup, string][] = [
+  ['inhaler', 'ยาสูด'],
+  ['insulin', 'อินซูลิน'],
+  ['other', 'อื่น ๆ'],
+]
+
+// Device name with the example products from the source underneath.
+function deviceOptions(group: DeviceGroup) {
+  return Object.fromEntries(
+    (Object.keys(DEVICE) as Device[])
+      .filter((d) => CHECKLISTS[d].group === group)
+      .map((d) => [
+        d,
+        <span key={d} style={{ display: 'flex', flexDirection: 'column' }}>
+          <span>{DEVICE[d]}</span>
+          {CHECKLISTS[d].examples && <span className="xs" style={{ fontWeight: 500, color: 'var(--tx2)' }}>{CHECKLISTS[d].examples}</span>}
+        </span>,
+      ]),
+  )
+}
 
 export function TechForm({ base, initial, previous }: { base: FormBase; initial: TechValues; previous: Record<string, string> }) {
   const [v, setV] = useState(initial)
@@ -34,7 +55,8 @@ export function TechForm({ base, initial, previous }: { base: FormBase; initial:
   const score = scoreTechnique(v.steps.map((st, i) => ({ ...st, result: v.results[i] })))
   const verdict = score.assessed < score.total ? { text: 'ยังประเมินไม่ครบ', cls: 'mute' } : score.criticalAllPassed ? { text: 'ขั้นสำคัญครบ', cls: 'ok' } : { text: 'ขั้นสำคัญยังไม่ครบ', cls: 'bad' }
   const topics = educationTopics(v.device)
-  const deviceOptions = Object.fromEntries(Object.entries(DEVICE).map(([k, name]) => [k, name]))
+  const guide = CHECKLISTS[v.device]
+  const fromSite = guide.errors !== undefined
 
   return (
     <Panel
@@ -49,7 +71,13 @@ export function TechForm({ base, initial, previous }: { base: FormBase; initial:
       onSubmit={() => save({ ...v, steps: undefined })}
     >
       <Section n={1} title="เลือกอุปกรณ์">
-        <Choice id="device" label="อุปกรณ์" options={deviceOptions} value={v.device} onChange={pickDevice} error={errors.device} />
+        {DEVICE_GROUPS.map(([group, title]) => (
+          <div key={group} style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+            <span className="label">{title}</span>
+            <Choice id={`device-${group}`} label={title} options={deviceOptions(group)} value={v.device} onChange={pickDevice} />
+          </div>
+        ))}
+        <Err id="device" msg={errors.device} />
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: 12 }}>
           <TextField id="drug" label="ชื่อยา" value={v.drug} onChange={set('drug')} error={errors.drug} />
           <TextField id="date" label="วันที่" type="date" value={v.date} onChange={set('date')} error={errors.date} />
@@ -122,6 +150,38 @@ export function TechForm({ base, initial, previous }: { base: FormBase; initial:
           })}
         </ol>
         <Err id="results" msg={errors.results} />
+        {(guide.errors?.length || guide.tip) && (
+          <div className="guide-box">
+            {guide.errors && guide.errors.length > 0 && (
+              <>
+                <span className="label">ข้อผิดพลาดที่พบบ่อย</span>
+                <ul>
+                  {guide.errors.map((e) => (
+                    <li key={e}>{e}</li>
+                  ))}
+                </ul>
+              </>
+            )}
+            {guide.tip && (
+              <>
+                <span className="label">คำแนะนำ</span>
+                <ul>
+                  {guide.tip.split(' · ').map((t) => (
+                    <li key={t}>{t}</li>
+                  ))}
+                </ul>
+              </>
+            )}
+            {fromSite && (
+              <span className="faint xs">
+                ที่มา:{' '}
+                <a href={CHECKLIST_SOURCE.url} target="_blank" rel="noreferrer">
+                  {CHECKLIST_SOURCE.name}
+                </a>
+              </span>
+            )}
+          </div>
+        )}
       </Section>
 
       <Section n={3} title="ความรู้ที่ให้และข้อแนะนำ">

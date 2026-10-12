@@ -239,6 +239,15 @@ describe('cancel', () => {
 })
 
 describe('constraints', () => {
+  it('accepts the inhaler devices added from the MED Library guide', async () => {
+    const p = await newPatient(A)
+    const steps = [{ text: 'x', critical: true, result: 'pass' }]
+    const [row] = await as(A, (tx) => tx`
+      insert into technique_assessments (patient_id, date, device, drug, phase, steps, score_pct, critical_all_passed)
+      values (${p.id}, current_date, 'breezhaler', 'Onbrez', 'post', ${tx.json(steps)}, 100, true) returning device`)
+    expect(row.device).toBe('breezhaler')
+  })
+
   it('rejects unknown codes, empty med rec and inverted targets', async () => {
     const p = await newPatient(A)
     await expect(
