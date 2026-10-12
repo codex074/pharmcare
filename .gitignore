@@ -19,8 +19,7 @@ next-env.d.ts
 # infra runbooks: IPs, hostnames, tunnel details (same policy as pharmshift)
 deploy/
 
-# local-only agent notes
-CLAUDE.md
+# Next.js may scaffold this when CLAUDE.md is missing; CLAUDE.md is the agent doc
 AGENTS.md
 
 # patient data must never be committed
