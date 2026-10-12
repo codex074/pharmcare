@@ -1,4 +1,6 @@
+import Link from 'next/link'
 import { Icon } from '@/components/icons'
+import type { PatientParams } from '@/lib/patients/href'
 import { DEVICE, DRP_ACCEPTANCE, DRP_CATEGORY } from '@/lib/codes'
 import type { Metric, Overview, Patient } from '@/lib/patients/queries'
 import { thaiDateShort } from '@/lib/thai-date'
@@ -6,7 +8,7 @@ import { TrendChart } from './trend-chart'
 
 type Lab = { name: string; unit: string; target: string; metric: Metric | null; okText?: string; extra?: string }
 
-export function OverviewTab({ patient: p, o }: { patient: Patient; o: Overview }) {
+export function OverviewTab({ patient: p, o, userId, hrefFor }: { patient: Patient; o: Overview; userId: string; hrefFor: (q: PatientParams) => string }) {
   const labs: Lab[] = [
     { name: 'HbA1c', unit: '%', target: `< ${p.goalA1c}`, metric: o.a1c },
     { name: 'BP', unit: 'mmHg', target: `< ${p.goalSbp}/${p.goalDbp}`, metric: o.bp },
@@ -118,6 +120,13 @@ export function OverviewTab({ patient: p, o }: { patient: Patient; o: Overview }
                       รอผลลัพธ์ · {d.daysOpen === 0 ? 'วันนี้' : `ค้าง ${d.daysOpen} วัน`}
                     </span>
                   </div>
+                  {d.createdBy === userId ? (
+                    <Link className="btn btn-sm" href={hrefFor({ form: 'drp', edit: d.id })} scroll={false} style={{ marginTop: 4 }}>
+                      บันทึกผลลัพธ์
+                    </Link>
+                  ) : (
+                    <span className="faint xs">บันทึกโดย {d.createdByName}</span>
+                  )}
                 </div>
               ))}
             </div>

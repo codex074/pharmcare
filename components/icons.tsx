@@ -52,6 +52,8 @@ const PATHS = {
     </>
   ),
   check: <path d="m5 12 5 5 9-10" />,
+  plus: <path d="M12 5v14M5 12h14" />,
+  edit: <path d="M4 20h4L19 9l-4-4L4 16v4zM14 6l4 4" />,
   refresh: <path d="M20 11a8 8 0 0 0-14.9-3M4 4v4h4M4 13a8 8 0 0 0 14.9 3M20 20v-4h-4" />,
   userPlus: (
     <>

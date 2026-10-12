@@ -228,3 +228,18 @@ textarea.input{padding:10px 14px;min-height:76px;resize:vertical;line-height:1.5
 .pc a.tab{color:var(--tx2)} .pc a.tab.on{color:var(--pri-tx)}
 .hn-box input:focus-visible{outline:none}
 .hn-box:focus-within{border-color:var(--pri);box-shadow:0 0 0 4px var(--pri-50)}
+
+/* inline-editable table (medication reconciliation) */
+.tbl.medrec td{padding:6px 8px;vertical-align:middle}
+.tbl.medrec input,.tbl.medrec select{width:100%;min-width:0;min-height:36px;border:1px solid transparent;border-radius:8px;background:transparent;padding:0 8px}
+.tbl.medrec input:focus,.tbl.medrec select:focus{border-color:var(--pri);background:var(--card);outline:none}
+
+/* NCC MERP letter picker */
+.merp{display:grid;grid-template-columns:repeat(9,minmax(0,1fr));gap:6px}
+.merp button{min-height:46px;border-radius:11px;border:1px solid var(--line);background:var(--card);color:var(--tx);font-weight:700;font-size:16px;cursor:pointer}
+.merp button.on{background:var(--pri);border-color:var(--pri);color:#fff}
+/* technique step pass/fail buttons */
+.pc button.btn.pass[aria-pressed=true]{background:var(--ok-bg);border-color:var(--ok-bd);color:var(--ok-tx)}
+.pc button.btn.fail[aria-pressed=true]{background:var(--dan-bg);border-color:var(--dan-bd);color:var(--dan-tx)}
+.tbl.medrec{table-layout:fixed}
+.tbl.medrec th:nth-child(1){width:36%} .tbl.medrec th:nth-child(4){width:92px} .tbl.medrec th:nth-child(5){width:44px}

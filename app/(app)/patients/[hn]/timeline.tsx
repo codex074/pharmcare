@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { Icon } from '@/components/icons'
 import { CARE_KINDS } from '@/lib/care-kinds'
 import { initials, parseFullName } from '@/lib/patients/name'
+import type { PatientParams } from '@/lib/patients/href'
 import type { CareKind, TimelineRow } from '@/lib/patients/queries'
 import { formatTimeline } from '@/lib/patients/timeline-format'
 import { bangkokDate, bangkokTime, thaiDateShort } from '@/lib/thai-date'
@@ -16,11 +17,15 @@ export function TimelineTab({
   kind,
   showCancelled,
   toggleHref,
+  userId,
+  hrefFor,
 }: {
   rows: TimelineRow[]
   kind: CareKind | 'all'
   showCancelled: boolean
   toggleHref: string
+  userId: string
+  hrefFor: (q: PatientParams) => string
 }) {
   const ofKind = rows.filter((r) => kind === 'all' || r.kind === kind)
   const shown = ofKind.filter((r) => showCancelled || !r.cancelledAt)
@@ -59,7 +64,18 @@ export function TimelineTab({
                     <span className={`chip ${meta.chip}`} style={{ fontSize: 12, padding: '2px 9px' }}>
                       {meta.label}
                     </span>
-                    {cancelled && (
+                    {!cancelled && r.data.created_by === userId && (
+                    <div style={{ display: 'flex', gap: 8, marginTop: 2 }}>
+                      <Link className="btn btn-sm" href={hrefFor({ form: r.kind, edit: r.id })} scroll={false}>
+                        <Icon name="edit" size="sm" />
+                        แก้ไข
+                      </Link>
+                      <Link className="btn btn-sm btn-out-dan" href={hrefFor({ cancel: `${r.kind}:${r.id}` })} scroll={false}>
+                        ยกเลิก
+                      </Link>
+                    </div>
+                  )}
+                  {cancelled && (
                       <span className="chip mute" style={{ fontSize: 12, padding: '2px 9px' }}>
                         ยกเลิกแล้ว
                       </span>

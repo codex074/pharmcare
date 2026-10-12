@@ -3,7 +3,7 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { Icon } from '@/components/icons'
 import { PageHeader } from '@/components/page-header'
-import { requireUser } from '@/lib/auth/dal'
+import { requireUser, type CurrentUser } from '@/lib/auth/dal'
 import { ageOn } from '@/lib/calc/dates'
 import { CARE_KINDS, CARE_ORDER, isCareKind } from '@/lib/care-kinds'
 import { CLINIC, SEX } from '@/lib/codes'
@@ -14,7 +14,8 @@ import { findActivePatientByHn, patientOverview, patientTimeline, type Patient }
 import { bangkokDate, thaiDateShort } from '@/lib/thai-date'
 import { naranjoCategory, NARANJO_CATEGORY } from '@/lib/calc/naranjo'
 import { OverviewTab } from './overview'
-import { CareTiles, clinicName, FormSheet, HisBand, patientHref, type PatientParams } from './parts'
+import { FormHost } from './forms/form-host'
+import { CareTiles, clinicName, HisBand, patientHref, type PatientParams } from './parts'
 import { RegisterForm } from './register-form'
 import { TimelineTab } from './timeline'
 
@@ -25,13 +26,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function PatientPage({ params, searchParams }: Props) {
-  await requireUser()
+  const user = await requireUser()
   const hn = normalizeHn(decodeURIComponent((await params).hn))
   if (hnError(hn)) notFound()
   const sp = await searchParams
 
   const [patient, his] = await Promise.all([findActivePatientByHn(hn), lookupHn(hn)])
-  return patient ? <ExistingPatient patient={patient} his={his} sp={sp} /> : <NewPatient hn={hn} his={his} sp={sp} />
+  return patient ? <ExistingPatient patient={patient} his={his} sp={sp} user={user} /> : <NewPatient hn={hn} his={his} sp={sp} />
 }
 
 async function NewPatient({ hn, his, sp }: { hn: string; his: HisResult; sp: PatientParams }) {
@@ -83,7 +84,7 @@ async function NewPatient({ hn, his, sp }: { hn: string; his: HisResult; sp: Pat
   )
 }
 
-async function ExistingPatient({ patient: p, his, sp }: { patient: Patient; his: HisResult; sp: PatientParams }) {
+async function ExistingPatient({ patient: p, his, sp, user }: { patient: Patient; his: HisResult; sp: PatientParams; user: CurrentUser }) {
   const tab = sp.tab === 'all' || isCareKind(sp.tab) ? sp.tab : 'overview'
   const showCancelled = sp.cancelled === '1'
   const [o, timeline] = await Promise.all([patientOverview(p), tab === 'overview' ? null : patientTimeline(p.id)])
@@ -104,7 +105,8 @@ async function ExistingPatient({ patient: p, his, sp }: { patient: Patient; his:
     ...CARE_ORDER.map((k) => ({ key: k, label: CARE_KINDS[k].label === 'สอนเทคนิค' ? 'เทคนิค' : CARE_KINDS[k].label, count: o.counts[k] })),
   ]
   const base = { clinic: clinicParam }
-  const form = isCareKind(sp.form) ? sp.form : null
+  const here = { ...base, tab: sp.tab, cancelled: sp.cancelled }
+  const isOwner = p.createdBy === user.id
 
   return (
     <>
@@ -142,6 +144,12 @@ async function ExistingPatient({ patient: p, his, sp }: { patient: Patient; his:
                 <span className="chip mute">{total ? `เคสเดิม · บริบาล ${total} ครั้ง` : 'ลงทะเบียนแล้ว · ยังไม่มีการบริบาล'}</span>
               </div>
             </div>
+            {isOwner && (
+              <Link className="btn btn-sm" href={patientHref(p.hn, { ...here, form: 'patient' })} scroll={false}>
+                <Icon name="edit" size="sm" />
+                แก้ไขข้อมูลผู้ป่วย
+              </Link>
+            )}
           </div>
 
           {allergyText && (
@@ -177,7 +185,7 @@ async function ExistingPatient({ patient: p, his, sp }: { patient: Patient; his:
 
         <section style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
           <h3 className="h2">เลือกการบริบาล</h3>
-          <CareTiles hn={p.hn} clinic={clinicParam} />
+          <CareTiles hn={p.hn} clinic={clinicParam} tab={sp.tab} />
         </section>
 
         <div className="tabs" role="tablist">
@@ -202,17 +210,19 @@ async function ExistingPatient({ patient: p, his, sp }: { patient: Patient; his:
         </div>
 
         {tab === 'overview' ? (
-          <OverviewTab patient={p} o={o} />
+          <OverviewTab patient={p} o={o} userId={user.id} hrefFor={(q) => patientHref(p.hn, { ...here, ...q })} />
         ) : (
           <TimelineTab
             rows={timeline!}
             kind={tab as 'all'}
             showCancelled={showCancelled}
             toggleHref={patientHref(p.hn, { ...base, tab, cancelled: showCancelled ? undefined : '1' })}
+            userId={user.id}
+            hrefFor={(q) => patientHref(p.hn, { ...here, ...q })}
           />
         )}
       </div>
-      {form && <FormSheet kind={form} closeHref={patientHref(p.hn, { ...base, tab: sp.tab, cancelled: sp.cancelled })} clinic={clinic?.name ?? null} />}
+      <FormHost patient={p} user={user} sp={sp} />
     </>
   )
 }
