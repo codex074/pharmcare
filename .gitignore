@@ -43,3 +43,6 @@ API-reference.md
 
 # machine-specific preview launcher
 .claude/launch.json
+
+# HIS relay connection notes (contains live tokens)
+HIS-RELAY.md
