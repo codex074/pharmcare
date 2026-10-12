@@ -15,7 +15,7 @@
 | 5 | หน้ากรอก HN + การ์ดผู้ป่วย + ประวัติ + เลือกประเภทการบริบาล | ✅ เสร็จ |
 | 6 | แฟ้มผู้ป่วย + ฟอร์มบริบาลทุกชนิด | ✅ เสร็จ |
 | 7 | ตัวชี้วัด, ส่งออก CSV, ประวัติแก้ไข | ✅ เสร็จ |
-| 8 | Deploy pharmcare-web (VPS) + DB production + nginx/tunnel + failover/backup | 🔄 เตรียมไฟล์ deploy แล้ว (`Dockerfile`, `deploy/`) — รอตัดสินใจที่วาง DB + ลงมือบน VPS |
+| 8 | Deploy pharmcare-web (VPS) + DB production + nginx/tunnel + failover/backup | 🔄 แผน + ไฟล์ deploy พร้อม (DB บน CT 103) image ทดสอบผ่าน — รอผู้ใช้อนุมัติทีละชุด B0–B5 |
 | 9 | `his-relay` + เชื่อม API ผู้ป่วยของโรงพยาบาล | ✅ relay รันจริงบนเครื่อง รพ. (always-on) + Cloudflare Tunnel/Access เสร็จ — ดึงชื่อ+คลินิกจาก HOSxP ได้ |
 
 ## รอผู้ใช้
@@ -25,7 +25,8 @@
 - [ ] เปิด Swagger ของโปรแกรมคิว (`/api/docs`) ดูว่ามี endpoint ค้นคลินิกจาก HN หรือ VN ไหม
 - [ ] ขอ token ของ API กลาง (`/api/hosxp/patient`) และ service account ของโปรแกรมคิว
 - [x] เลือกเครื่องในโรงพยาบาลที่จะลง `his-relay` (เครื่อง OPD Windows, Scheduled Task S4U, 2026-10-12)
-- [ ] **ตัดสินใจที่วาง DB production** (VPS / CT 103 / managed) — ค้างอยู่ รอก่อนเริ่มขั้น 8
+- [x] ตัดสินใจที่วาง DB production → **CT 103** ใน cluster ของ PharmShift ตาม CLAUDE.md (2026-10-12)
+- [ ] อนุมัติ production ทีละชุด (B0 ตรวจ → B1 role/DB → B2 เว็บบน CT 103 → B3 hostname ใน tunnel → B4 VPS → B5 failover.sh) ตาม `deploy/PLAN.md`
 - [ ] เปลี่ยน relay ไปใช้ **service account แยก** ของ queue API (ตอนนี้ใช้ login ส่วนตัว `pharsurg1` — ควรเปลี่ยน + หมุนรหัส เพราะเคยพิมพ์ในแชต)
 - [ ] ให้ IT รพ. **whitelist `*.codex074.com` ใน FortiGate** เพื่อให้ PC รพ. เปิดหน้าเว็บ pharmcare ได้ (relay ไม่ต้อง เพราะ VPS เป็นคนเรียก)
 
@@ -89,3 +90,8 @@ Mac อยู่นอก รพ. → เรียก relay ผ่าน Cloudfl
   - ข้อควรรู้: queue API ยังใช้ login `pharsurg1` (ควรเปลี่ยนเป็น service account), FortiGate ของ รพ. บล็อก `*.codex074.com` (unrated) → PC รพ. เปิดหน้าเว็บเองไม่ได้จนกว่า IT จะ whitelist (แต่ VPS เรียก relay ได้ปกติ)
   - lint/typecheck/test(105)/build ผ่านครบ
 - 2026-10-12: **หยุดที่ก่อนขั้น 8 (VPS)** เพื่อย้ายไปทำต่อบน Mac — ดูหัวข้อ "ต่อบน Mac (handoff)" ด้านบน
+- 2026-10-12: ขั้น 8 (เตรียม) บน Mac — ผู้ใช้เลือกวาง DB production บน CT 103 (ตาม CLAUDE.md), เขียน `deploy/PLAN.md` ใหม่ (gitignore) พร้อม `roles.sql`, compose (`web` / `pharmcare-web` บน network `deploy_default`), override พอร์ต 3100 สำหรับ VPS, nginx site, `ship-image.sh` (build amd64 บน Mac แล้ว `docker load`), แพตช์ `failover.sh` ของ PharmShift (สตาร์ต pharmcare-web หลัง promote + สลับ DNS `pharmcare.codex074.com` แบบไม่บล็อก PharmShift)
+  - แก้ `Dockerfile`: ใช้ Node 24.13.1 (npm 11 ตรงกับ lockfile — npm 10 ใน Node 22 อ่าน lockfile ไม่ผ่าน), เพิ่ม stage `migrate` (รัน drizzle-kit ใน network ของเซิร์ฟเวอร์), `HOSTNAME=0.0.0.0` (ไม่งั้น healthcheck 127.0.0.1 ไม่ผ่าน) · ล้างรายการ esbuild ค้างใน `package-lock.json` · eslint ข้าม `deploy/`
+  - ทดสอบ: image migrate บน DB เปล่าผ่าน, container healthy, `/api/health` 200 · lint/typecheck/test(105)/build ผ่าน
+  - ข้อสังเกต: CLAUDE.md กำหนดให้ mutation ตรวจ header `Origin` แต่ยังไม่พบโค้ดตรวจ (Server Actions ของ Next ตรวจเองอยู่แล้ว ส่วน route `/api/auth/login` ยังไม่ตรวจ) — ควรเพิ่มก่อน/หลังขึ้นจริง
+
