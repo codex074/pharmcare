@@ -15,7 +15,7 @@
 | 5 | หน้ากรอก HN + การ์ดผู้ป่วย + ประวัติ + เลือกประเภทการบริบาล | ✅ เสร็จ |
 | 6 | แฟ้มผู้ป่วย + ฟอร์มบริบาลทุกชนิด | ✅ เสร็จ |
 | 7 | ตัวชี้วัด, ส่งออก CSV, ประวัติแก้ไข | ✅ เสร็จ |
-| 8 | Deploy pharmcare-web (VPS) + DB production + nginx/tunnel + failover/backup | 🔄 B0–B2 เสร็จ (DB + เว็บ `pharmcare-web` รันบน CT 103 แล้ว ยังไม่เปิดสู่ภายนอก) — ถัดไป B3 ผูก hostname ใน tunnel |
+| 8 | Deploy pharmcare-web (VPS) + DB production + nginx/tunnel + failover/backup | 🔄 B0–B3 เสร็จ — **ใช้งานจริงได้ที่ https://pharmcare.codex074.com** (login ด้วยบัญชี PharmShift) · เหลือ B4 (VPS failover) + B5 (failover.sh) · HIS รอ relay กลับมาออนไลน์ |
 | 9 | `his-relay` + เชื่อม API ผู้ป่วยของโรงพยาบาล | ✅ relay รันจริงบนเครื่อง รพ. (always-on) + Cloudflare Tunnel/Access เสร็จ — ดึงชื่อ+คลินิกจาก HOSxP ได้ |
 
 ## รอผู้ใช้
@@ -103,4 +103,6 @@ Mac อยู่นอก รพ. → เรียก relay ผ่าน Cloudfl
   - VPS standby: `pharmcare` + 2 role replicate มาแล้ว (streaming, lag 4 วินาที) · PharmShift API 200, หน้าเว็บ 200
 - 2026-10-12: ขั้น 8 B2 เสร็จ (ผู้ใช้อนุมัติ) — image `5239e18` (amd64) ส่งไป CT 103, `/opt/pharmcare/` (compose, `pharmcare-web.env` 600, `migrate.env` 600, `.env` tag), migration 7 ไฟล์ผ่าน (9 ตาราง), `pharmcare-web` healthy บน `deploy_default` (RAM ~50 MB / limit 512 MB), ลบไฟล์รหัสชั่วคราว `/root/pharmcare-setup` แล้ว (shred) · PharmShift API 200 ×5 + เว็บ 200, monitor บน VPS ไม่มี fail
   - HIS: ใส่ค่า relay ครบใน env แล้ว แต่ relay ตอบ 530 (error 1033 = tunnel ฝั่งเครื่อง รพ. ไม่ได้เชื่อมต่อ) ทั้งจาก Mac และจาก container — แอปใช้กรอกชื่อ/คลินิกเองไปก่อน เมื่อ relay กลับมาไม่ต้อง restart (env ครบแล้ว)
+- 2026-10-12: ขั้น 8 B3 เสร็จ — ผู้ใช้เพิ่ม public hostname `pharmcare.codex074.com` → `pharmcare-web:3000` ใน tunnel ของ PharmShift; `/api/health` 200 ผ่าน Cloudflare, cert ขอบเป็น Google Trust Services (WE1) ตามที่ PC รพ. เชื่อถือ, ผู้ใช้ login ด้วยบัญชี PharmShift ได้
+  - HIS ยังดึงไม่ได้: relay ยังตอบ 530 / error 1033 (tunnel บนเครื่อง OPD ไม่มี connector) — `deploy/RELAY-SETUP.md` เขียนว่า cloudflared ยังไม่ได้ติดตั้งเป็น service อาจเคยรันแบบเปิดหน้าต่างค้างไว้แล้วปิดไป
 
