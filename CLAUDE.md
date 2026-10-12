@@ -49,10 +49,10 @@ failover:  browser → Cloudflare → VPS nginx → pharmcare-web (VPS) → prom
 
 Two connections, both as role `pharmcare_app`:
 
-- `DATABASE_URL` → database `pharmcare`. SELECT / INSERT / UPDATE only — **no DELETE on any table**, INSERT + SELECT only on `audit_log`, no DDL.
+- `DATABASE_URL` → database `pharmcare`. SELECT / INSERT / UPDATE only — **no DELETE on any table**, SELECT only on `audit_log` (only the definer trigger writes it), no DDL. Old `login_attempts` are pruned through the definer function `purge_login_attempts()`.
 - `AUTH_DATABASE_URL` → PharmShift's `postgres` database. Column-level `SELECT` on `public.users` (`id, pha_id, prefix, f_name, l_name, role, password, is_active, must_change_password`) and nothing else. Reading another `users` column needs a new GRANT on the primary — a production-gated change.
 
-`pharmcare_owner` owns the `pharmcare` database and runs migrations (`MIGRATION_DATABASE_URL`, drizzle-kit). Drizzle owns tables; triggers, functions and GRANTs are hand-written SQL migrations.
+`pharmcare_owner` owns the `pharmcare` database and runs migrations (`MIGRATION_DATABASE_URL`, drizzle-kit). Drizzle owns tables (`lib/db/schema.ts`); triggers, functions and GRANTs are hand-written SQL migrations (`drizzle-kit generate --custom`, statements separated by `--> statement-breakpoint`). **Every new table needs a GRANT migration for `pharmcare_app`**, and every new clinical table must be added to the trigger loop in `drizzle/0003_record_integrity.sql`'s pattern.
 
 Never grant a pharmcare role to `authenticator` / `anon` / `authenticated`: PostgREST at `db.codex074.com` only serves the `postgres` database, which is what keeps `pharmcare` off the public API.
 
@@ -76,8 +76,9 @@ Same `pha_id` / password as PharmShift, separate login (different origin, so no 
 These are enforced in Postgres so that a bug or a hand-written query cannot bypass them:
 
 - **No deletes.** A record is *cancelled* (`cancelled_at`, `cancelled_by`, `cancel_reason`). Cancelled rows still show, struck through with their reason, and are excluded from every statistic.
-- **Audit by trigger.** `AFTER INSERT OR UPDATE` triggers (SECURITY DEFINER, owned by `pharmcare_owner`) write `audit_log` with a per-column diff. The actor comes from `current_setting('app.user_id')`, which the app sets with `SET LOCAL` inside every write transaction — a write without it must fail.
+- **Audit by trigger.** `AFTER INSERT OR UPDATE` triggers (SECURITY DEFINER, owned by `pharmcare_owner`) write `audit_log` with a per-column diff. The actor comes from `current_setting('app.user_id')`, and `app.user_name`, which every write sets through `withActor(user, tx => …)` in `lib/db` (`set_config(..., true)`, transaction-local) — a write without it fails. Never write clinical tables outside `withActor`.
 - **Owner-only edits.** A `BEFORE UPDATE` trigger rejects changes when `app.user_id <> created_by`, and `created_by` / `created_at` are immutable. Exception: anyone may update the HIS-synced columns of `patients` (name, sex, birthdate, `his_synced_at`); that is a sync, and it is still audited. Everyone can read everything and add new records to any patient.
+- Coded values (DRP category, NCC MERP, outcome, ADR type, device …) are stored as stable English codes from `lib/codes.ts`, which also holds the Thai labels; the schema turns those lists into CHECK constraints, so adding a code needs a migration.
 - Shared columns on every clinical table: `id uuid`, `created_by`, `created_by_name`, `created_at`, `updated_by`, `updated_at`, `cancelled_*`, `is_sample`.
 
 ## Patient lookup (HIS)

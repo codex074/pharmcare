@@ -15,6 +15,20 @@
       "when": 1791765385638,
       "tag": "0001_login_attempts_grants",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1791769386293,
+      "tag": "0002_clinical_tables",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1791769393263,
+      "tag": "0003_record_integrity",
+      "breakpoints": true
     }
   ]
 }

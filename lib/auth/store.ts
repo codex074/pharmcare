@@ -41,3 +41,9 @@ export const loginDeps: LoginDeps = {
     await sql`insert into login_attempts (pha_id, ip) values (${phaId}, ${ip})`
   },
 }
+
+// Drops attempts older than 30 days (SECURITY DEFINER; the app has no DELETE).
+export async function purgeOldLoginAttempts() {
+  const { sql } = clients()
+  await sql`select purge_login_attempts()`
+}

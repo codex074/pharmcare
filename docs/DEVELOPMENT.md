@@ -18,3 +18,4 @@ npm run dev
 | `npm run db:reset` | ล้างฐาน dev แล้วสร้างใหม่จาก `dev/initdb/` |
 | `npm run db:generate` / `db:migrate` | สร้าง / รัน migration ด้วย `pharmcare_owner` |
 | `npm run lint` / `typecheck` / `test` / `build` | ตรวจก่อน push |
+| `npm run test:db` | ทดสอบกฎในฐานข้อมูล (ห้ามลบ, audit, แก้ได้เฉพาะเจ้าของ, ยกเลิก) ต้อง `db:up` + `db:migrate` ก่อน — ใช้ซ้ำตอนซ้อม restore |

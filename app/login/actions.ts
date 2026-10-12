@@ -2,13 +2,14 @@
 
 import { cookies, headers } from 'next/headers'
 import { redirect } from 'next/navigation'
+import { after } from 'next/server'
 import { env } from '@/lib/env'
 import { forgetUser } from '@/lib/auth/dal'
 import { attemptLogin } from '@/lib/auth/login'
 import { displayName } from '@/lib/auth/policy'
 import { clientIp } from '@/lib/auth/rate-limit'
 import { SESSION_COOKIE, sessionCookieOptions, signSession } from '@/lib/auth/session'
-import { loginDeps } from '@/lib/auth/store'
+import { loginDeps, purgeOldLoginAttempts } from '@/lib/auth/store'
 
 export type LoginState = { error?: string; phaId?: string } | undefined
 
@@ -26,6 +27,7 @@ export async function login(_prev: LoginState, formData: FormData): Promise<Logi
   )
   ;(await cookies()).set(SESSION_COOKIE, token, sessionCookieOptions())
   forgetUser(account.id)
+  after(() => purgeOldLoginAttempts().catch((e) => console.error('[login] purge failed', e)))
   redirect('/')
 }
 
