@@ -15,8 +15,8 @@
 | 5 | หน้ากรอก HN + การ์ดผู้ป่วย + ประวัติ + เลือกประเภทการบริบาล | ✅ เสร็จ |
 | 6 | แฟ้มผู้ป่วย + ฟอร์มบริบาลทุกชนิด | ✅ เสร็จ |
 | 7 | ตัวชี้วัด, ส่งออก CSV, ประวัติแก้ไข | ✅ เสร็จ |
-| 8 | Deploy: pve1 → mirror VPS → failover → backup → restore drill | ⬜ |
-| 9 | `his-relay` + เชื่อม API ผู้ป่วยของโรงพยาบาล | 🔄 ฝั่งแอป + ร่าง relay (`relay/his-relay.mjs`) เขียนแล้ว — รัน/ทดสอบกับของจริง + deploy ยังรอ |
+| 8 | Deploy pharmcare-web (VPS) + DB production + nginx/tunnel + failover/backup | 🔄 เตรียมไฟล์ deploy แล้ว (`Dockerfile`, `deploy/`) — รอตัดสินใจที่วาง DB + ลงมือบน VPS |
+| 9 | `his-relay` + เชื่อม API ผู้ป่วยของโรงพยาบาล | ✅ relay รันจริงบนเครื่อง รพ. (always-on) + Cloudflare Tunnel/Access เสร็จ — ดึงชื่อ+คลินิกจาก HOSxP ได้ |
 
 ## รอผู้ใช้
 
@@ -24,7 +24,36 @@
 - [x] ยืนยันว่าการอนุมัติ PDPA ของโรงพยาบาลครอบคลุมการเก็บชื่อ-สกุลเต็ม (ผู้ใช้ยืนยัน 2026-10-12)
 - [ ] เปิด Swagger ของโปรแกรมคิว (`/api/docs`) ดูว่ามี endpoint ค้นคลินิกจาก HN หรือ VN ไหม
 - [ ] ขอ token ของ API กลาง (`/api/hosxp/patient`) และ service account ของโปรแกรมคิว
-- [ ] เลือกเครื่องในโรงพยาบาลที่จะลง `his-relay`
+- [x] เลือกเครื่องในโรงพยาบาลที่จะลง `his-relay` (เครื่อง OPD Windows, Scheduled Task S4U, 2026-10-12)
+- [ ] **ตัดสินใจที่วาง DB production** (VPS / CT 103 / managed) — ค้างอยู่ รอก่อนเริ่มขั้น 8
+- [ ] เปลี่ยน relay ไปใช้ **service account แยก** ของ queue API (ตอนนี้ใช้ login ส่วนตัว `pharsurg1` — ควรเปลี่ยน + หมุนรหัส เพราะเคยพิมพ์ในแชต)
+- [ ] ให้ IT รพ. **whitelist `*.codex074.com` ใน FortiGate** เพื่อให้ PC รพ. เปิดหน้าเว็บ pharmcare ได้ (relay ไม่ต้อง เพราะ VPS เป็นคนเรียก)
+
+## ต่อบน Mac (handoff — 2026-10-12)
+
+โค้ดทั้งหมด (ถึงขั้น 9 ฝั่งแอป + relay + ไฟล์ deploy) push ขึ้น GitHub (branch `main`) แล้ว
+ฝั่ง **HIS relay + Cloudflare ตั้งเสร็จบนเครื่อง รพ. (Windows OPD)** — รันเองตลอด **ไม่ต้องทำซ้ำบน Mac**
+
+### เริ่ม dev บน Mac
+1. `git clone https://github.com/codex074/pharmcare.git && cd pharmcare`
+2. ติดตั้ง: Node 22+ (หรือ 24), Docker Desktop (git มากับ macOS)
+3. `npm install`
+4. `cp .env.example .env.local` แล้วแก้ `SESSION_JWT_SECRET=` (`openssl rand -base64 48`); DB URLs ใช้ค่า default (127.0.0.1:54329) ได้เลย; `HIS_RELAY_URL=` เว้นว่างไว้ก่อน (กรอกชื่อ/คลินิกเองระหว่าง dev)
+5. `npm run db:up` → `npm run db:migrate` → `npm run db:seed`
+6. `npm run dev` → http://localhost:3000 (บัญชี dev: `dev_pharm` / `dev-pass-1234`)
+
+### ไฟล์ที่ไม่มากับ git (gitignore) — ต้องสร้าง/ก๊อปเอง
+- `.env.local` → ทำตามข้อ 4
+- `relay/.env` → อยู่บนเครื่อง รพ. เท่านั้น ไม่ต้องทำบน Mac
+- `deploy/*` (README.md, docker-compose.vps.yml, cloudflared-config, service files, RELAY-SETUP.md) → อยู่ในเครื่อง รพ. ไม่ขึ้น git ถ้าต้องการบน Mac ก๊อปมาเอง หรือสร้างใหม่จาก `*.example`
+
+### ต่อ HIS จริงจาก Mac (ถ้าจะทดสอบ)
+Mac อยู่นอก รพ. → เรียก relay ผ่าน Cloudflare ได้ โดยตั้งใน `.env.local`: `HIS_RELAY_URL=https://his-relay.codex074.com`, `HIS_RELAY_CF_ACCESS_CLIENT_ID/_SECRET` (service token), `HIS_RELAY_SECRET` (ตรงกับ `relay/.env` บนเครื่อง รพ.) — ระวัง: ดึงข้อมูลผู้ป่วยจริง ใช้เท่าที่จำเป็น
+
+### ขั้นถัดไป (ขั้น 8 — ยังไม่ทำ)
+- ตัดสินใจที่วาง DB production ก่อน แล้วทำตาม `deploy/README.md`
+- env บน VPS: `HIS_RELAY_URL`, `HIS_RELAY_CF_ACCESS_CLIENT_ID/_SECRET`, `HIS_RELAY_SECRET`, `*_DATABASE_URL`, `SESSION_JWT_SECRET`
+- หน้าเว็บที่ PC รพ. เปิด ต้องให้ IT whitelist `*.codex074.com` ใน FortiGate
 
 ## ไม่อยู่ในขอบเขตรอบนี้
 
@@ -52,3 +81,11 @@
 - 2026-10-12: ขั้น 9 (ฝั่งแอป) — `QueueRelayLookup` ใน `lib/his/index.ts` ยิง `GET {HIS_RELAY_URL}/patient?hn=` แนบ Cloudflare Access service token + header secret (`X-Relay-Secret`), map สถานะ 200/404/401/403/5xx/ตอบไม่ใช่ JSON เป็น found/not_found/unavailable, ตรวจ body ด้วย zod ให้ตรง type `HisPatient`, `patientLookup()` เลือก lookup นี้อัตโนมัติเมื่อตั้ง `HIS_RELAY_URL`, เพิ่ม env 3 ตัว (`lib/env.ts`, `.env.example`), unit test `lib/his/his.test.ts` 7 เคส
   - ติดตั้ง Node v24.20.0 + git 2.55.0 บนเครื่อง dev แล้ว, `npm install` + lint/typecheck/test(104)/build ผ่านครบ, ยังไม่ commit/push (โฟลเดอร์ยังไม่ใช่ git repo / ยังไม่มี remote)
   - ค้างรอ: `deploy/PLAN.md` (gitignore ไม่ติดมากับ zip) และ `PATIENT-LOOKUP-API.md` เพื่อสร้างตัว `his-relay` จริงให้ตรง contract — ตอนนี้ contract ยึดตาม type `HisPatient` ในrepo, ชื่อ header auth (`X-Relay-Secret`) เป็นค่าสมมติรอยืนยัน
+- 2026-10-12: deploy ฝั่ง HIS relay เสร็จ (commit `df9d8b8`, `37aca7d`) —
+  - `relay/his-relay.mjs` ตัวจริง: login queue API (`/auth/login`) + ต่ออายุ token เอง, `GET /patient?hn=` → เรียก `/his/patient/hn` map เป็น `HisPatient`, โหลดรหัสจาก `relay/.env`
+  - ช่องคลินิกในฟอร์มลงทะเบียนเปลี่ยนเป็น **free text** pre-fill จาก HIS (เดิมเป็นชิป 6 โค้ด) — เก็บลง `main_clinic_name` (text, ไม่มี constraint)
+  - เครื่อง รพ. (Windows OPD): relay รันเป็น **Scheduled Task `his-relay`** (node.exe, AtLogOn, S4U ซ่อนหน้าต่าง, restart เอง, ไม่ให้ sleep) — ไม่ใช้ pm2 เพราะเครื่องมี AppLocker บล็อก %AppData%
+  - Cloudflare: Tunnel → `his-relay.codex074.com` → `localhost:4000`, Access policy = Service Auth (เบราว์เซอร์ไม่มี token โดน 403 ตามคาด) ยืนยันแล้วว่า tunnel+Access ขึ้น
+  - ข้อควรรู้: queue API ยังใช้ login `pharsurg1` (ควรเปลี่ยนเป็น service account), FortiGate ของ รพ. บล็อก `*.codex074.com` (unrated) → PC รพ. เปิดหน้าเว็บเองไม่ได้จนกว่า IT จะ whitelist (แต่ VPS เรียก relay ได้ปกติ)
+  - lint/typecheck/test(105)/build ผ่านครบ
+- 2026-10-12: **หยุดที่ก่อนขั้น 8 (VPS)** เพื่อย้ายไปทำต่อบน Mac — ดูหัวข้อ "ต่อบน Mac (handoff)" ด้านบน
