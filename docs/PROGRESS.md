@@ -15,7 +15,7 @@
 | 5 | หน้ากรอก HN + การ์ดผู้ป่วย + ประวัติ + เลือกประเภทการบริบาล | ✅ เสร็จ |
 | 6 | แฟ้มผู้ป่วย + ฟอร์มบริบาลทุกชนิด | ✅ เสร็จ |
 | 7 | ตัวชี้วัด, ส่งออก CSV, ประวัติแก้ไข | ✅ เสร็จ |
-| 8 | Deploy pharmcare-web (VPS) + DB production + nginx/tunnel + failover/backup | 🔄 B0–B3 เสร็จ — **ใช้งานจริงได้ที่ https://pharmcare.codex074.com** (login ด้วยบัญชี PharmShift) · เหลือ B4 (VPS failover) + B5 (failover.sh) · HIS รอ relay กลับมาออนไลน์ |
+| 8 | Deploy pharmcare-web (VPS) + DB production + nginx/tunnel + failover/backup | 🔄 B0–B3 เสร็จ — **ใช้งานจริงได้ที่ https://pharmcare.codex074.com** (login ด้วยบัญชี PharmShift) · เหลือ B4 (VPS failover) + B5 (failover.sh) · HIS ดึงชื่อผู้ป่วยจากเว็บจริงได้แล้ว |
 | 9 | `his-relay` + เชื่อม API ผู้ป่วยของโรงพยาบาล | ✅ relay รันจริงบนเครื่อง รพ. (always-on) + Cloudflare Tunnel/Access เสร็จ — ดึงชื่อ+คลินิกจาก HOSxP ได้ |
 
 ## รอผู้ใช้
@@ -27,8 +27,8 @@
 - [x] เลือกเครื่องในโรงพยาบาลที่จะลง `his-relay` (เครื่อง OPD Windows, Scheduled Task S4U, 2026-10-12)
 - [x] ตัดสินใจที่วาง DB production → **CT 103** ใน cluster ของ PharmShift ตาม CLAUDE.md (2026-10-12)
 - [ ] อนุมัติ production ทีละชุด (B0 ตรวจ → B1 role/DB → B2 เว็บบน CT 103 → B3 hostname ใน tunnel → B4 VPS → B5 failover.sh) ตาม `deploy/PLAN.md`
-- [ ] **relay ออฟไลน์**: `his-relay.codex074.com` ตอบ 530 / Cloudflare error 1033 (tunnel ไม่มี connector) — ตรวจเครื่อง OPD ว่าเปิดอยู่และ cloudflared รันอยู่
-- [ ] หมุน secret ที่เคยพิมพ์ในแชต: Cloudflare Access service token ของ relay และ `RELAY_SHARED_SECRET` (พิมพ์ในแชต 2026-10-12)
+- [x] ~~**relay ออฟไลน์**~~ (relay กลับมาออนไลน์ 2026-10-12): `his-relay.codex074.com` ตอบ 530 / Cloudflare error 1033 (tunnel ไม่มี connector) — ตรวจเครื่อง OPD ว่าเปิดอยู่และ cloudflared รันอยู่
+- [ ] หมุน secret ที่เคยพิมพ์ในแชต: Cloudflare Access service token ของ relay (`RELAY_SHARED_SECRET` หมุนแล้ว 2026-10-12)
 - [ ] เปลี่ยน relay ไปใช้ **service account แยก** ของ queue API (ตอนนี้ใช้ login ส่วนตัว `pharsurg1` — ควรเปลี่ยน + หมุนรหัส เพราะเคยพิมพ์ในแชต)
 - [ ] ให้ IT รพ. **whitelist `*.codex074.com` ใน FortiGate** เพื่อให้ PC รพ. เปิดหน้าเว็บ pharmcare ได้ (relay ไม่ต้อง เพราะ VPS เป็นคนเรียก)
 
@@ -105,4 +105,4 @@ Mac อยู่นอก รพ. → เรียก relay ผ่าน Cloudfl
   - HIS: ใส่ค่า relay ครบใน env แล้ว แต่ relay ตอบ 530 (error 1033 = tunnel ฝั่งเครื่อง รพ. ไม่ได้เชื่อมต่อ) ทั้งจาก Mac และจาก container — แอปใช้กรอกชื่อ/คลินิกเองไปก่อน เมื่อ relay กลับมาไม่ต้อง restart (env ครบแล้ว)
 - 2026-10-12: ขั้น 8 B3 เสร็จ — ผู้ใช้เพิ่ม public hostname `pharmcare.codex074.com` → `pharmcare-web:3000` ใน tunnel ของ PharmShift; `/api/health` 200 ผ่าน Cloudflare, cert ขอบเป็น Google Trust Services (WE1) ตามที่ PC รพ. เชื่อถือ, ผู้ใช้ login ด้วยบัญชี PharmShift ได้
   - HIS ยังดึงไม่ได้: relay ยังตอบ 530 / error 1033 (tunnel บนเครื่อง OPD ไม่มี connector) — `deploy/RELAY-SETUP.md` เขียนว่า cloudflared ยังไม่ได้ติดตั้งเป็น service อาจเคยรันแบบเปิดหน้าต่างค้างไว้แล้วปิดไป
-
+- 2026-10-12: HIS ใช้งานจริงได้ — ผู้ใช้ตั้ง `RELAY_SHARED_SECRET` ใหม่บนเครื่อง OPD; อัปเดต `HIS_RELAY_SECRET` ใน `/opt/pharmcare/pharmcare-web.env` บน CT 103 (600) ให้ตรงกัน แล้ว recreate `pharmcare-web` (healthy, `/api/health` 200) · ทดสอบจากใน container: relay ตอบ 404 กับ HN ทดสอบ (ผ่าน Access + secret; ค่าเก่าได้ 401) · ผู้ใช้ยืนยันค้น HN จากเว็บได้ · VPS ยังไม่มี `/opt/pharmcare/` (B4) — ตอนทำ B4 ใช้ `deploy/pharmcare-web.env` บน Mac ซึ่งอัปเดตแล้ว
