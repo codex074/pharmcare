@@ -26,3 +26,10 @@ INSERT INTO public.users (pha_id, password, prefix, f_name, l_name, role, is_act
   ('dev_inactive',   '$2b$12$Zhf02vtHJQvN.YIVuK9kg.c54TrfN3mdWd8CsKFvRM6tz8q3xOG/y', 'ภญ.', 'ถูกระงับ', 'ทดสอบ',  'pharmacist',          false, false, 'S-0006'),
   ('dev_mustchange', '$2b$12$Zhf02vtHJQvN.YIVuK9kg.c54TrfN3mdWd8CsKFvRM6tz8q3xOG/y', 'ภก.', 'ต้องเปลี่ยน', 'รหัส', 'pharmacist',          true,  true,  'S-0007'),
   ('dev_plaintext',  'dev-pass-1234',                                                   'ภญ.', 'รหัสเก่า', 'ทดสอบ',  'pharmacist',          true,  false, 'S-0008');
+
+-- Production has RLS on (not forced) with these policies (read on CT 103, 2026-10-12).
+-- PharmCare's lookups depend on the SELECT policy staying USING (true) for PUBLIC.
+ALTER TABLE public.users ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Service role can insert users" ON public.users FOR INSERT WITH CHECK (true);
+CREATE POLICY "Users can read all pharmacists" ON public.users FOR SELECT USING (true);
+CREATE POLICY "Users can update own record" ON public.users FOR UPDATE USING (true);

@@ -15,7 +15,7 @@
 | 5 | หน้ากรอก HN + การ์ดผู้ป่วย + ประวัติ + เลือกประเภทการบริบาล | ✅ เสร็จ |
 | 6 | แฟ้มผู้ป่วย + ฟอร์มบริบาลทุกชนิด | ✅ เสร็จ |
 | 7 | ตัวชี้วัด, ส่งออก CSV, ประวัติแก้ไข | ✅ เสร็จ |
-| 8 | Deploy pharmcare-web (VPS) + DB production + nginx/tunnel + failover/backup | 🔄 แผน + ไฟล์ deploy พร้อม (DB บน CT 103) image ทดสอบผ่าน — รอผู้ใช้อนุมัติทีละชุด B0–B5 |
+| 8 | Deploy pharmcare-web (VPS) + DB production + nginx/tunnel + failover/backup | 🔄 B0 ตรวจ CT 103 ผ่าน — รออนุมัติ B1 (สร้าง role + DB) |
 | 9 | `his-relay` + เชื่อม API ผู้ป่วยของโรงพยาบาล | ✅ relay รันจริงบนเครื่อง รพ. (always-on) + Cloudflare Tunnel/Access เสร็จ — ดึงชื่อ+คลินิกจาก HOSxP ได้ |
 
 ## รอผู้ใช้
@@ -94,4 +94,6 @@ Mac อยู่นอก รพ. → เรียก relay ผ่าน Cloudfl
   - แก้ `Dockerfile`: ใช้ Node 24.13.1 (npm 11 ตรงกับ lockfile — npm 10 ใน Node 22 อ่าน lockfile ไม่ผ่าน), เพิ่ม stage `migrate` (รัน drizzle-kit ใน network ของเซิร์ฟเวอร์), `HOSTNAME=0.0.0.0` (ไม่งั้น healthcheck 127.0.0.1 ไม่ผ่าน) · ล้างรายการ esbuild ค้างใน `package-lock.json` · eslint ข้าม `deploy/`
   - ทดสอบ: image migrate บน DB เปล่าผ่าน, container healthy, `/api/health` 200 · lint/typecheck/test(105)/build ผ่าน
   - ตรวจแล้ว: การแก้ไขข้อมูลทุกจุด (รวม login) เป็น Server Action ซึ่ง Next ตรวจ `Origin` เทียบ host ให้เอง, pool DB 6+2 = 8 ไม่เกิน `CONNECTION LIMIT 10`
+- 2026-10-12: ขั้น 8 B0 (ตรวจ CT 103 อ่านอย่างเดียว) ผ่าน — x86_64, network `deploy_default`, ส่ง image ผ่าน `pct exec` ได้, ยังไม่มี role/DB pharmcare, template1 สะอาด, hba ให้ docker network login ด้วย scram ได้
+  - พบว่าตาราง `users` ของ PharmShift เปิด RLS อยู่ แต่ policy อ่านเป็น `USING (true)` สำหรับทุก role → `pharmcare_app` อ่านได้ ไม่ต้องแก้ PharmShift · เพิ่ม RLS + policy เดียวกันใน dev DB (`dev/initdb/01`) แล้วทดสอบ login ทุกกรณีผ่าน image จริง (เภสัช/แอดมิน/ตัวพิมพ์ใหญ่+ช่องว่าง เข้าได้; จพง. → "เฉพาะเภสัชกร"; ถูกระงับ; ต้องเปลี่ยนรหัส/รหัส plaintext → "กรุณาเปลี่ยนรหัสผ่านใน PharmShift ก่อน"; รหัสผิด; POST ข้าม origin ถูกปฏิเสธ; เปิดหน้าแฟ้มผู้ป่วยหลัง login ได้) · test:db 26 ข้อผ่าน
 
