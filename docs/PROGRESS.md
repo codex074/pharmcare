@@ -15,7 +15,7 @@
 | 5 | หน้ากรอก HN + การ์ดผู้ป่วย + ประวัติ + เลือกประเภทการบริบาล | ✅ เสร็จ |
 | 6 | แฟ้มผู้ป่วย + ฟอร์มบริบาลทุกชนิด | ✅ เสร็จ |
 | 7 | ตัวชี้วัด, ส่งออก CSV, ประวัติแก้ไข | ✅ เสร็จ |
-| 8 | Deploy pharmcare-web (VPS) + DB production + nginx/tunnel + failover/backup | 🔄 B0 ตรวจ CT 103 ผ่าน — รออนุมัติ B1 (สร้าง role + DB) |
+| 8 | Deploy pharmcare-web (VPS) + DB production + nginx/tunnel + failover/backup | 🔄 B0–B1 เสร็จ (role + DB `pharmcare` บน CT 103, replicate ไป VPS แล้ว) — รออนุมัติ B2 (เว็บบน CT 103) |
 | 9 | `his-relay` + เชื่อม API ผู้ป่วยของโรงพยาบาล | ✅ relay รันจริงบนเครื่อง รพ. (always-on) + Cloudflare Tunnel/Access เสร็จ — ดึงชื่อ+คลินิกจาก HOSxP ได้ |
 
 ## รอผู้ใช้
@@ -96,4 +96,7 @@ Mac อยู่นอก รพ. → เรียก relay ผ่าน Cloudfl
   - ตรวจแล้ว: การแก้ไขข้อมูลทุกจุด (รวม login) เป็น Server Action ซึ่ง Next ตรวจ `Origin` เทียบ host ให้เอง, pool DB 6+2 = 8 ไม่เกิน `CONNECTION LIMIT 10`
 - 2026-10-12: ขั้น 8 B0 (ตรวจ CT 103 อ่านอย่างเดียว) ผ่าน — x86_64, network `deploy_default`, ส่ง image ผ่าน `pct exec` ได้, ยังไม่มี role/DB pharmcare, template1 สะอาด, hba ให้ docker network login ด้วย scram ได้
   - พบว่าตาราง `users` ของ PharmShift เปิด RLS อยู่ แต่ policy อ่านเป็น `USING (true)` สำหรับทุก role → `pharmcare_app` อ่านได้ ไม่ต้องแก้ PharmShift · เพิ่ม RLS + policy เดียวกันใน dev DB (`dev/initdb/01`) แล้วทดสอบ login ทุกกรณีผ่าน image จริง (เภสัช/แอดมิน/ตัวพิมพ์ใหญ่+ช่องว่าง เข้าได้; จพง. → "เฉพาะเภสัชกร"; ถูกระงับ; ต้องเปลี่ยนรหัส/รหัส plaintext → "กรุณาเปลี่ยนรหัสผ่านใน PharmShift ก่อน"; รหัสผิด; POST ข้าม origin ถูกปฏิเสธ; เปิดหน้าแฟ้มผู้ป่วยหลัง login ได้) · test:db 26 ข้อผ่าน
+- 2026-10-12: ขั้น 8 B1 เสร็จ (ผู้ใช้อนุมัติ) — สร้าง `pharmcare_owner` (limit 2), `pharmcare_app` (limit 10, timeout 15s), DB `pharmcare` บน CT 103 รหัสสุ่มอยู่ใน `deploy/secrets.env` (Mac, gitignore) และ `/root/pharmcare-setup/` บน CT 103 (600, ลบหลัง B2) ไม่เคยผ่าน command line
+  - ตรวจผ่าน docker network: app login ได้, รหัสผิดถูกปฏิเสธ, อ่าน `users` ได้ 116 แถวเฉพาะคอลัมน์ที่อนุญาต (`select *` และตารางอื่นเช่น `shifts` ถูกปฏิเสธ), สร้างตารางใน `pharmcare` ไม่ได้, ไม่ใช่ superuser/bypassrls, ไม่เป็นสมาชิก role ใด, `anon`/`authenticated`/`authenticator` connect `pharmcare` ไม่ได้
+  - VPS standby: `pharmcare` + 2 role replicate มาแล้ว (streaming, lag 4 วินาที) · PharmShift API 200, หน้าเว็บ 200
 
