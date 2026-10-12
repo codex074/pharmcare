@@ -9,7 +9,7 @@
 | 0 | สร้าง repo + โครงโฟลเดอร์ | ✅ เสร็จ |
 | – | นำดีไซน์จาก Claude Design เข้า repo (`docs/design/`) | ✅ เสร็จ |
 | 1 | Scaffold Next.js + theme.css จากดีไซน์ + Drizzle + docker compose สำหรับ dev | ✅ เสร็จ |
-| 2 | Auth: login / logout / requireUser / rate limit | ⬜ |
+| 2 | Auth: login / logout / requireUser / rate limit | 🟡 โค้ด + unit test ผ่าน, ยังไม่ได้ทดสอบกับ dev DB (OrbStack ค้าง) |
 | 3 | Schema + migrations + triggers + grants | ⬜ |
 | 4 | ฟังก์ชันคำนวณ (eGFR, TTR, Naranjo, คะแนนเทคนิค) + checklist + unit tests | ⬜ |
 | 5 | หน้ากรอก HN + การ์ดผู้ป่วย + ประวัติ + เลือกประเภทการบริบาล | ⬜ |
