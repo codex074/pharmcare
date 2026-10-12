@@ -49,7 +49,7 @@ failover:  browser → Cloudflare → VPS nginx → pharmcare-web (VPS) → prom
 
 Two connections, both as role `pharmcare_app`:
 
-- `DATABASE_URL` → database `pharmcare`. SELECT / INSERT / UPDATE only — **no DELETE on any table**, SELECT only on `audit_log` (only the definer trigger writes it), no DDL. Old `login_attempts` are pruned through the definer function `purge_login_attempts()`.
+- `DATABASE_URL` → database `pharmcare`. SELECT / INSERT / UPDATE only — **no DELETE on any table**, SELECT only on `audit_log` (only the definer trigger writes it), no DDL. Old `login_attempts` are pruned through the definer function `purge_login_attempts()`. Every CSV export is recorded by calling the definer function `log_export(table, rows, filters)` inside `withActor` (`export_log` is SELECT-only for the app).
 - `AUTH_DATABASE_URL` → PharmShift's `postgres` database. Column-level `SELECT` on `public.users` (`id, pha_id, prefix, f_name, l_name, role, password, is_active, must_change_password`) and nothing else. Reading another `users` column needs a new GRANT on the primary — a production-gated change.
 
 `pharmcare_owner` owns the `pharmcare` database and runs migrations (`MIGRATION_DATABASE_URL`, drizzle-kit). Drizzle owns tables (`lib/db/schema.ts`); triggers, functions and GRANTs are hand-written SQL migrations (`drizzle-kit generate --custom`, statements separated by `--> statement-breakpoint`). **Every new table needs a GRANT migration for `pharmcare_app`**, and every new clinical table must be added to the trigger loop in `drizzle/0003_record_integrity.sql`'s pattern.

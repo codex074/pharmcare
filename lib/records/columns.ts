@@ -1,0 +1,121 @@
+import * as C from '@/lib/codes'
+
+// Thai names and code labels for database columns (snake_case), used by the
+// audit log view and the CSV export.
+
+type Options = Record<string, string>
+
+export const CODE_LABELS: Record<string, Record<string, Options>> = {
+  patients: { sex: C.SEX },
+  visits: { adherence_methods: C.ADHERENCE_METHOD },
+  drps: { category: C.DRP_CATEGORY, ncc_merp: C.NCC_MERP, interventions: C.DRP_INTERVENTION, acceptance: C.DRP_ACCEPTANCE, outcome: C.DRP_OUTCOME },
+  high_alert_monitoring: { drug: C.HIGH_ALERT_DRUG, events: C.HIGH_ALERT_EVENT, factors: C.HIGH_ALERT_FACTOR, action: C.HIGH_ALERT_ACTION },
+  adrs: {
+    type: C.ADR_TYPE,
+    severity: C.ADR_SEVERITY,
+    seriousness: C.ADR_SERIOUSNESS,
+    management: C.ADR_MANAGEMENT,
+    result: C.ADR_RESULT,
+    actions: C.ADR_ACTION,
+  },
+  technique_assessments: { device: C.DEVICE, phase: C.TECHNIQUE_PHASE, drug_user: C.DRUG_USER },
+}
+
+export const TABLE_TH: Record<string, string> = {
+  patients: 'ผู้ป่วย',
+  visits: 'Visit',
+  drps: 'DRP',
+  high_alert_monitoring: 'ยาเสี่ยงสูง',
+  adrs: 'ADR',
+  technique_assessments: 'สอนเทคนิค',
+  audit_log: 'ประวัติการแก้ไข',
+}
+
+export const COLUMN_TH: Record<string, string> = {
+  hn: 'HN',
+  prefix: 'คำนำหน้า',
+  first_name: 'ชื่อ',
+  last_name: 'นามสกุล',
+  sex: 'เพศ',
+  birth_date: 'วันเกิด',
+  birth_date_estimated: 'วันเกิดโดยประมาณ',
+  his_synced_at: 'ซิงก์จาก HIS',
+  weight_kg: 'น้ำหนัก',
+  main_clinic_name: 'คลินิกหลัก',
+  main_clinic_code: 'รหัสคลินิกหลัก',
+  conditions: 'โรคประจำตัว',
+  allergy_summary: 'ประวัติแพ้ยา',
+  goal_a1c: 'เป้า HbA1c',
+  goal_sbp: 'เป้า SBP',
+  goal_dbp: 'เป้า DBP',
+  goal_ldl: 'เป้า LDL',
+  note: 'หมายเหตุ',
+  date: 'วันที่',
+  clinic_name: 'คลินิก',
+  clinic_code: 'รหัสคลินิก',
+  sbp: 'SBP',
+  dbp: 'DBP',
+  fbs: 'FBS',
+  a1c: 'HbA1c',
+  ldl: 'LDL',
+  scr: 'SCr',
+  adherence_pct: 'ความร่วมมือ %',
+  adherence_methods: 'วิธีประเมินความร่วมมือ',
+  med_rec: 'รายการยาที่ใช้จริง',
+  soap_s: 'S',
+  soap_o: 'O',
+  soap_a: 'A',
+  soap_p: 'P',
+  drug: 'ยา',
+  drug_other: 'ชื่อยาอื่น',
+  category: 'ประเภทปัญหา',
+  ncc_merp: 'NCC MERP',
+  detail: 'รายละเอียด',
+  interventions: 'การแก้ไข',
+  recommendation: 'ข้อเสนอต่อแพทย์',
+  acceptance: 'การตอบรับของแพทย์',
+  outcome: 'ผลลัพธ์',
+  outcome_date: 'วันที่ประเมินผล',
+  follow_up_note: 'บันทึกการติดตาม',
+  indication: 'ข้อบ่งใช้',
+  parameter: 'ค่าที่ติดตาม',
+  value: 'ผลที่วัดได้',
+  target_low: 'เป้าต่ำสุด',
+  target_high: 'เป้าสูงสุด',
+  dose: 'ขนาดยา',
+  events: 'เหตุการณ์',
+  factors: 'ปัจจัย',
+  action: 'การจัดการ',
+  plan: 'แผน',
+  drug_start_date: 'วันที่เริ่มยา',
+  reaction: 'อาการ',
+  type: 'ชนิด',
+  severity: 'ความรุนแรง',
+  seriousness: 'ความร้ายแรง',
+  naranjo_answers: 'คำตอบ Naranjo',
+  naranjo_score: 'คะแนน Naranjo',
+  management: 'การจัดการ',
+  management_note: 'รายละเอียดการจัดการ',
+  result: 'ผลลัพธ์',
+  actions: 'การดำเนินการ',
+  device: 'อุปกรณ์',
+  phase: 'รอบการประเมิน',
+  drug_user: 'ผู้ใช้ยา',
+  steps: 'ขั้นตอน',
+  score_pct: 'คะแนน %',
+  critical_all_passed: 'ขั้นสำคัญครบ',
+  education: 'ความรู้ที่ให้',
+  problem: 'ปัญหา',
+  advice: 'ข้อแนะนำ',
+  aids: 'สื่อที่ให้',
+  is_sample: 'ข้อมูลตัวอย่าง',
+  cancelled_at: 'ยกเลิกเมื่อ',
+  cancel_reason: 'เหตุผลที่ยกเลิก',
+}
+
+export function codeLabel(table: string, column: string, v: unknown): unknown {
+  const opts = CODE_LABELS[table]?.[column]
+  if (!opts) return v
+  if (Array.isArray(v)) return v.map((x) => opts[x as string] ?? x)
+  return v == null ? null : (opts[v as string] ?? v)
+}

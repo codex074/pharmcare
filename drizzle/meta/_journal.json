@@ -29,6 +29,20 @@
       "when": 1791769393263,
       "tag": "0003_record_integrity",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1791794073836,
+      "tag": "0004_export_log",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1791794074118,
+      "tag": "0005_export_log_grants",
+      "breakpoints": true
     }
   ]
 }

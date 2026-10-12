@@ -243,3 +243,11 @@ textarea.input{padding:10px 14px;min-height:76px;resize:vertical;line-height:1.5
 .pc button.btn.fail[aria-pressed=true]{background:var(--dan-bg);border-color:var(--dan-bd);color:var(--dan-tx)}
 .tbl.medrec{table-layout:fixed}
 .tbl.medrec th:nth-child(1){width:36%} .tbl.medrec th:nth-child(4){width:92px} .tbl.medrec th:nth-child(5){width:44px}
+
+/* KPI bars and link-based segmented controls */
+.kpi-bar{display:grid;grid-template-columns:minmax(120px,200px) minmax(0,1fr) 96px;gap:14px;align-items:center}
+@media (max-width:599px){.kpi-bar{grid-template-columns:minmax(0,1fr) 72px;gap:6px 10px}.kpi-bar>div{grid-column:1/-1;grid-row:2}}
+.pc .seg a{color:var(--tx2)}
+.pc .seg a.on{background:var(--card);color:var(--pri-tx);box-shadow:0 1px 2px rgba(15,23,42,.08)}
+.guide ol,.guide ul{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:10px;line-height:1.6}
+.guide b{color:var(--h)}

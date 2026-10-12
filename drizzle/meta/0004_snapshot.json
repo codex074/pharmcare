@@ -1,0 +1,1735 @@
+{
+  "id": "48f44d19-15a8-42fb-a26a-acac0a7666fb",
+  "prevId": "d6276436-0182-4f5a-b5ed-8bc769174a83",
+  "version": "7",
+  "dialect": "postgresql",
+  "tables": {
+    "public.adrs": {
+      "name": "adrs",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "created_by": {
+          "name": "created_by",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "nullif(current_setting('app.user_id', true), '')::uuid"
+        },
+        "created_by_name": {
+          "name": "created_by_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "nullif(current_setting('app.user_name', true), '')"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_by": {
+          "name": "updated_by",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "cancelled_at": {
+          "name": "cancelled_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "cancelled_by": {
+          "name": "cancelled_by",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "cancel_reason": {
+          "name": "cancel_reason",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "is_sample": {
+          "name": "is_sample",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "patient_id": {
+          "name": "patient_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "date": {
+          "name": "date",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "drug": {
+          "name": "drug",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "drug_start_date": {
+          "name": "drug_start_date",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "reaction": {
+          "name": "reaction",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "type": {
+          "name": "type",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "severity": {
+          "name": "severity",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "seriousness": {
+          "name": "seriousness",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "naranjo_answers": {
+          "name": "naranjo_answers",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "naranjo_score": {
+          "name": "naranjo_score",
+          "type": "smallint",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "management": {
+          "name": "management",
+          "type": "text[]",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'{}'::text[]"
+        },
+        "management_note": {
+          "name": "management_note",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "result": {
+          "name": "result",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "actions": {
+          "name": "actions",
+          "type": "text[]",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'{}'::text[]"
+        }
+      },
+      "indexes": {
+        "adrs_patient_date_idx": {
+          "name": "adrs_patient_date_idx",
+          "columns": [
+            {
+              "expression": "patient_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "date",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "adrs_patient_id_patients_id_fk": {
+          "name": "adrs_patient_id_patients_id_fk",
+          "tableFrom": "adrs",
+          "tableTo": "patients",
+          "columnsFrom": [
+            "patient_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {
+        "adrs_cancel_consistent": {
+          "name": "adrs_cancel_consistent",
+          "value": "(\"adrs\".\"cancelled_at\" is null and \"adrs\".\"cancelled_by\" is null and \"adrs\".\"cancel_reason\" is null)\n     or (\"adrs\".\"cancelled_at\" is not null and \"adrs\".\"cancelled_by\" is not null and nullif(btrim(\"adrs\".\"cancel_reason\"), '') is not null)"
+        },
+        "adrs_type": {
+          "name": "adrs_type",
+          "value": "\"adrs\".\"type\" in ('allergy', 'side_effect', 'pseudoallergy')"
+        },
+        "adrs_severity": {
+          "name": "adrs_severity",
+          "value": "\"adrs\".\"severity\" in ('mild', 'moderate', 'severe')"
+        },
+        "adrs_seriousness": {
+          "name": "adrs_seriousness",
+          "value": "\"adrs\".\"seriousness\" in ('not_serious', 'hospitalization', 'life_threatening', 'disability', 'death')"
+        },
+        "adrs_management": {
+          "name": "adrs_management",
+          "value": "\"adrs\".\"management\" <@ array['stop_drug', 'reduce_dose', 'symptomatic_treatment', 'refer']::text[]"
+        },
+        "adrs_result": {
+          "name": "adrs_result",
+          "value": "\"adrs\".\"result\" in ('recovered', 'improving', 'not_recovered', 'recovered_with_sequelae')"
+        },
+        "adrs_actions": {
+          "name": "adrs_actions",
+          "value": "\"adrs\".\"actions\" <@ array['allergy_card', 'his_record', 'hpvc_report', 'avoidance_advice']::text[]"
+        },
+        "adrs_naranjo": {
+          "name": "adrs_naranjo",
+          "value": "(\"adrs\".\"naranjo_answers\" is null and \"adrs\".\"naranjo_score\" is null)\n       or (jsonb_typeof(\"adrs\".\"naranjo_answers\") = 'array' and jsonb_array_length(\"adrs\".\"naranjo_answers\") = 10\n           and \"adrs\".\"naranjo_score\" between -4 and 13)"
+        },
+        "adrs_start_before_onset": {
+          "name": "adrs_start_before_onset",
+          "value": "\"adrs\".\"drug_start_date\" is null or \"adrs\".\"drug_start_date\" <= \"adrs\".\"date\""
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "public.audit_log": {
+      "name": "audit_log",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "bigint",
+          "primaryKey": true,
+          "notNull": true,
+          "identity": {
+            "type": "always",
+            "name": "audit_log_id_seq",
+            "schema": "public",
+            "increment": "1",
+            "startWith": "1",
+            "minValue": "1",
+            "maxValue": "9223372036854775807",
+            "cache": "1",
+            "cycle": false
+          }
+        },
+        "table_name": {
+          "name": "table_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "record_id": {
+          "name": "record_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "patient_id": {
+          "name": "patient_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "action": {
+          "name": "action",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "actor_id": {
+          "name": "actor_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "actor_name": {
+          "name": "actor_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "at": {
+          "name": "at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "diff": {
+          "name": "diff",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {
+        "audit_log_patient_idx": {
+          "name": "audit_log_patient_idx",
+          "columns": [
+            {
+              "expression": "patient_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "at",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "audit_log_record_idx": {
+          "name": "audit_log_record_idx",
+          "columns": [
+            {
+              "expression": "table_name",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "record_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "audit_log_at_idx": {
+          "name": "audit_log_at_idx",
+          "columns": [
+            {
+              "expression": "at",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {
+        "audit_log_action": {
+          "name": "audit_log_action",
+          "value": "\"audit_log\".\"action\" in ('insert', 'update', 'cancel')"
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "public.drps": {
+      "name": "drps",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "created_by": {
+          "name": "created_by",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "nullif(current_setting('app.user_id', true), '')::uuid"
+        },
+        "created_by_name": {
+          "name": "created_by_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "nullif(current_setting('app.user_name', true), '')"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_by": {
+          "name": "updated_by",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "cancelled_at": {
+          "name": "cancelled_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "cancelled_by": {
+          "name": "cancelled_by",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "cancel_reason": {
+          "name": "cancel_reason",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "is_sample": {
+          "name": "is_sample",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "patient_id": {
+          "name": "patient_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "date": {
+          "name": "date",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "drug": {
+          "name": "drug",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "category": {
+          "name": "category",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "ncc_merp": {
+          "name": "ncc_merp",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "detail": {
+          "name": "detail",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "interventions": {
+          "name": "interventions",
+          "type": "text[]",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "recommendation": {
+          "name": "recommendation",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "acceptance": {
+          "name": "acceptance",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "outcome": {
+          "name": "outcome",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'pending'"
+        },
+        "outcome_date": {
+          "name": "outcome_date",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "follow_up_note": {
+          "name": "follow_up_note",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {
+        "drps_patient_date_idx": {
+          "name": "drps_patient_date_idx",
+          "columns": [
+            {
+              "expression": "patient_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "date",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "drps_open_idx": {
+          "name": "drps_open_idx",
+          "columns": [
+            {
+              "expression": "outcome",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "where": "\"drps\".\"cancelled_at\" is null and \"drps\".\"outcome\" = 'pending'",
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "drps_patient_id_patients_id_fk": {
+          "name": "drps_patient_id_patients_id_fk",
+          "tableFrom": "drps",
+          "tableTo": "patients",
+          "columnsFrom": [
+            "patient_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {
+        "drps_cancel_consistent": {
+          "name": "drps_cancel_consistent",
+          "value": "(\"drps\".\"cancelled_at\" is null and \"drps\".\"cancelled_by\" is null and \"drps\".\"cancel_reason\" is null)\n     or (\"drps\".\"cancelled_at\" is not null and \"drps\".\"cancelled_by\" is not null and nullif(btrim(\"drps\".\"cancel_reason\"), '') is not null)"
+        },
+        "drps_category": {
+          "name": "drps_category",
+          "value": "\"drps\".\"category\" in ('unnecessary_drug', 'needs_drug', 'ineffective_drug', 'dose_too_low', 'adverse_reaction', 'dose_too_high', 'nonadherence', 'interaction')"
+        },
+        "drps_ncc_merp": {
+          "name": "drps_ncc_merp",
+          "value": "\"drps\".\"ncc_merp\" in ('A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I')"
+        },
+        "drps_interventions": {
+          "name": "drps_interventions",
+          "value": "cardinality(\"drps\".\"interventions\") > 0 and \"drps\".\"interventions\" <@ array['adjust_dose', 'add_drug', 'stop_or_switch', 'counsel', 'technique', 'administration', 'lab_monitoring', 'refer']::text[]"
+        },
+        "drps_acceptance": {
+          "name": "drps_acceptance",
+          "value": "\"drps\".\"acceptance\" in ('not_needed', 'pending', 'accepted', 'partial', 'rejected')"
+        },
+        "drps_outcome": {
+          "name": "drps_outcome",
+          "value": "\"drps\".\"outcome\" in ('pending', 'resolved', 'partial', 'unresolved')"
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "public.export_log": {
+      "name": "export_log",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "bigint",
+          "primaryKey": true,
+          "notNull": true,
+          "identity": {
+            "type": "always",
+            "name": "export_log_id_seq",
+            "schema": "public",
+            "increment": "1",
+            "startWith": "1",
+            "minValue": "1",
+            "maxValue": "9223372036854775807",
+            "cache": "1",
+            "cycle": false
+          }
+        },
+        "table_name": {
+          "name": "table_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "row_count": {
+          "name": "row_count",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "filters": {
+          "name": "filters",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'{}'::jsonb"
+        },
+        "actor_id": {
+          "name": "actor_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "actor_name": {
+          "name": "actor_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "at": {
+          "name": "at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "export_log_at_idx": {
+          "name": "export_log_at_idx",
+          "columns": [
+            {
+              "expression": "at",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.high_alert_monitoring": {
+      "name": "high_alert_monitoring",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "created_by": {
+          "name": "created_by",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "nullif(current_setting('app.user_id', true), '')::uuid"
+        },
+        "created_by_name": {
+          "name": "created_by_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "nullif(current_setting('app.user_name', true), '')"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_by": {
+          "name": "updated_by",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "cancelled_at": {
+          "name": "cancelled_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "cancelled_by": {
+          "name": "cancelled_by",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "cancel_reason": {
+          "name": "cancel_reason",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "is_sample": {
+          "name": "is_sample",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "patient_id": {
+          "name": "patient_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "date": {
+          "name": "date",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "drug": {
+          "name": "drug",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "drug_other": {
+          "name": "drug_other",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "indication": {
+          "name": "indication",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "parameter": {
+          "name": "parameter",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "value": {
+          "name": "value",
+          "type": "numeric(8, 2)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "target_low": {
+          "name": "target_low",
+          "type": "numeric(8, 2)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "target_high": {
+          "name": "target_high",
+          "type": "numeric(8, 2)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "dose": {
+          "name": "dose",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "events": {
+          "name": "events",
+          "type": "text[]",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'{}'::text[]"
+        },
+        "factors": {
+          "name": "factors",
+          "type": "text[]",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'{}'::text[]"
+        },
+        "action": {
+          "name": "action",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "plan": {
+          "name": "plan",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {
+        "high_alert_patient_date_idx": {
+          "name": "high_alert_patient_date_idx",
+          "columns": [
+            {
+              "expression": "patient_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "date",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "high_alert_monitoring_patient_id_patients_id_fk": {
+          "name": "high_alert_monitoring_patient_id_patients_id_fk",
+          "tableFrom": "high_alert_monitoring",
+          "tableTo": "patients",
+          "columnsFrom": [
+            "patient_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {
+        "high_alert_monitoring_cancel_consistent": {
+          "name": "high_alert_monitoring_cancel_consistent",
+          "value": "(\"high_alert_monitoring\".\"cancelled_at\" is null and \"high_alert_monitoring\".\"cancelled_by\" is null and \"high_alert_monitoring\".\"cancel_reason\" is null)\n     or (\"high_alert_monitoring\".\"cancelled_at\" is not null and \"high_alert_monitoring\".\"cancelled_by\" is not null and nullif(btrim(\"high_alert_monitoring\".\"cancel_reason\"), '') is not null)"
+        },
+        "high_alert_drug": {
+          "name": "high_alert_drug",
+          "value": "\"high_alert_monitoring\".\"drug\" in ('warfarin', 'doac', 'insulin', 'methotrexate', 'digoxin', 'lithium', 'phenytoin', 'amiodarone', 'oral_chemo', 'other')"
+        },
+        "high_alert_value": {
+          "name": "high_alert_value",
+          "value": "\"high_alert_monitoring\".\"value\" between 0 and 5000"
+        },
+        "high_alert_target": {
+          "name": "high_alert_target",
+          "value": "\"high_alert_monitoring\".\"target_low\" < \"high_alert_monitoring\".\"target_high\""
+        },
+        "high_alert_events": {
+          "name": "high_alert_events",
+          "value": "\"high_alert_monitoring\".\"events\" <@ array['minor_bleed', 'major_bleed', 'thrombosis', 'toxicity']::text[]"
+        },
+        "high_alert_factors": {
+          "name": "high_alert_factors",
+          "value": "\"high_alert_monitoring\".\"factors\" <@ array['missed_or_wrong_dose', 'drug_interaction', 'herbal_supplement', 'diet_change', 'acute_illness', 'alcohol']::text[]"
+        },
+        "high_alert_action": {
+          "name": "high_alert_action",
+          "value": "\"high_alert_monitoring\".\"action\" in ('maintain', 'increase', 'decrease', 'hold', 'refer_now')"
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "public.login_attempts": {
+      "name": "login_attempts",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "pha_id": {
+          "name": "pha_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "ip": {
+          "name": "ip",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "attempted_at": {
+          "name": "attempted_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "login_attempts_pha_id_idx": {
+          "name": "login_attempts_pha_id_idx",
+          "columns": [
+            {
+              "expression": "pha_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "attempted_at",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "login_attempts_ip_idx": {
+          "name": "login_attempts_ip_idx",
+          "columns": [
+            {
+              "expression": "ip",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "attempted_at",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.patients": {
+      "name": "patients",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "created_by": {
+          "name": "created_by",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "nullif(current_setting('app.user_id', true), '')::uuid"
+        },
+        "created_by_name": {
+          "name": "created_by_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "nullif(current_setting('app.user_name', true), '')"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_by": {
+          "name": "updated_by",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "cancelled_at": {
+          "name": "cancelled_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "cancelled_by": {
+          "name": "cancelled_by",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "cancel_reason": {
+          "name": "cancel_reason",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "is_sample": {
+          "name": "is_sample",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "hn": {
+          "name": "hn",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "prefix": {
+          "name": "prefix",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "first_name": {
+          "name": "first_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "last_name": {
+          "name": "last_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "sex": {
+          "name": "sex",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "birth_date": {
+          "name": "birth_date",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "birth_date_estimated": {
+          "name": "birth_date_estimated",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "his_synced_at": {
+          "name": "his_synced_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "weight_kg": {
+          "name": "weight_kg",
+          "type": "numeric(4, 1)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "main_clinic_code": {
+          "name": "main_clinic_code",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "main_clinic_name": {
+          "name": "main_clinic_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "conditions": {
+          "name": "conditions",
+          "type": "text[]",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'{}'::text[]"
+        },
+        "allergy_summary": {
+          "name": "allergy_summary",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "goal_a1c": {
+          "name": "goal_a1c",
+          "type": "numeric(3, 1)",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 7
+        },
+        "goal_sbp": {
+          "name": "goal_sbp",
+          "type": "smallint",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 140
+        },
+        "goal_dbp": {
+          "name": "goal_dbp",
+          "type": "smallint",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 90
+        },
+        "goal_ldl": {
+          "name": "goal_ldl",
+          "type": "smallint",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 100
+        },
+        "note": {
+          "name": "note",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {
+        "patients_hn_active_uq": {
+          "name": "patients_hn_active_uq",
+          "columns": [
+            {
+              "expression": "hn",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
+          "where": "\"patients\".\"cancelled_at\" is null",
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {
+        "patients_cancel_consistent": {
+          "name": "patients_cancel_consistent",
+          "value": "(\"patients\".\"cancelled_at\" is null and \"patients\".\"cancelled_by\" is null and \"patients\".\"cancel_reason\" is null)\n     or (\"patients\".\"cancelled_at\" is not null and \"patients\".\"cancelled_by\" is not null and nullif(btrim(\"patients\".\"cancel_reason\"), '') is not null)"
+        },
+        "patients_sex": {
+          "name": "patients_sex",
+          "value": "\"patients\".\"sex\" in ('male', 'female')"
+        },
+        "patients_weight": {
+          "name": "patients_weight",
+          "value": "\"patients\".\"weight_kg\" between 2 and 300"
+        },
+        "patients_goal_a1c": {
+          "name": "patients_goal_a1c",
+          "value": "\"patients\".\"goal_a1c\" between 5 and 10"
+        },
+        "patients_goal_sbp": {
+          "name": "patients_goal_sbp",
+          "value": "\"patients\".\"goal_sbp\" between 100 and 180"
+        },
+        "patients_goal_dbp": {
+          "name": "patients_goal_dbp",
+          "value": "\"patients\".\"goal_dbp\" between 60 and 110"
+        },
+        "patients_goal_ldl": {
+          "name": "patients_goal_ldl",
+          "value": "\"patients\".\"goal_ldl\" between 40 and 190"
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "public.technique_assessments": {
+      "name": "technique_assessments",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "created_by": {
+          "name": "created_by",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "nullif(current_setting('app.user_id', true), '')::uuid"
+        },
+        "created_by_name": {
+          "name": "created_by_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "nullif(current_setting('app.user_name', true), '')"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_by": {
+          "name": "updated_by",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "cancelled_at": {
+          "name": "cancelled_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "cancelled_by": {
+          "name": "cancelled_by",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "cancel_reason": {
+          "name": "cancel_reason",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "is_sample": {
+          "name": "is_sample",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "patient_id": {
+          "name": "patient_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "date": {
+          "name": "date",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "device": {
+          "name": "device",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "drug": {
+          "name": "drug",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "phase": {
+          "name": "phase",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "drug_user": {
+          "name": "drug_user",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "steps": {
+          "name": "steps",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "score_pct": {
+          "name": "score_pct",
+          "type": "smallint",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "critical_all_passed": {
+          "name": "critical_all_passed",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "education": {
+          "name": "education",
+          "type": "text[]",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'{}'::text[]"
+        },
+        "problem": {
+          "name": "problem",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "advice": {
+          "name": "advice",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "aids": {
+          "name": "aids",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {
+        "technique_patient_date_idx": {
+          "name": "technique_patient_date_idx",
+          "columns": [
+            {
+              "expression": "patient_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "date",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "technique_assessments_patient_id_patients_id_fk": {
+          "name": "technique_assessments_patient_id_patients_id_fk",
+          "tableFrom": "technique_assessments",
+          "tableTo": "patients",
+          "columnsFrom": [
+            "patient_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {
+        "technique_assessments_cancel_consistent": {
+          "name": "technique_assessments_cancel_consistent",
+          "value": "(\"technique_assessments\".\"cancelled_at\" is null and \"technique_assessments\".\"cancelled_by\" is null and \"technique_assessments\".\"cancel_reason\" is null)\n     or (\"technique_assessments\".\"cancelled_at\" is not null and \"technique_assessments\".\"cancelled_by\" is not null and nullif(btrim(\"technique_assessments\".\"cancel_reason\"), '') is not null)"
+        },
+        "technique_device": {
+          "name": "technique_device",
+          "value": "\"technique_assessments\".\"device\" in ('pen', 'syringe', 'mdi', 'spacer', 'accuhaler', 'turbuhaler', 'respimat', 'nasal')"
+        },
+        "technique_phase": {
+          "name": "technique_phase",
+          "value": "\"technique_assessments\".\"phase\" in ('pre', 'post', 'follow_up')"
+        },
+        "technique_drug_user": {
+          "name": "technique_drug_user",
+          "value": "\"technique_assessments\".\"drug_user\" in ('self', 'caregiver')"
+        },
+        "technique_steps": {
+          "name": "technique_steps",
+          "value": "jsonb_typeof(\"technique_assessments\".\"steps\") = 'array' and jsonb_array_length(\"technique_assessments\".\"steps\") > 0"
+        },
+        "technique_score": {
+          "name": "technique_score",
+          "value": "\"technique_assessments\".\"score_pct\" between 0 and 100"
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "public.visits": {
+      "name": "visits",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "created_by": {
+          "name": "created_by",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "nullif(current_setting('app.user_id', true), '')::uuid"
+        },
+        "created_by_name": {
+          "name": "created_by_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "nullif(current_setting('app.user_name', true), '')"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_by": {
+          "name": "updated_by",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "cancelled_at": {
+          "name": "cancelled_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "cancelled_by": {
+          "name": "cancelled_by",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "cancel_reason": {
+          "name": "cancel_reason",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "is_sample": {
+          "name": "is_sample",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "patient_id": {
+          "name": "patient_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "date": {
+          "name": "date",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "clinic_code": {
+          "name": "clinic_code",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "clinic_name": {
+          "name": "clinic_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "sbp": {
+          "name": "sbp",
+          "type": "smallint",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "dbp": {
+          "name": "dbp",
+          "type": "smallint",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "fbs": {
+          "name": "fbs",
+          "type": "smallint",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "a1c": {
+          "name": "a1c",
+          "type": "numeric(3, 1)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "ldl": {
+          "name": "ldl",
+          "type": "smallint",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "scr": {
+          "name": "scr",
+          "type": "numeric(4, 2)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "adherence_pct": {
+          "name": "adherence_pct",
+          "type": "smallint",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "adherence_methods": {
+          "name": "adherence_methods",
+          "type": "text[]",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'{}'::text[]"
+        },
+        "med_rec": {
+          "name": "med_rec",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "soap_s": {
+          "name": "soap_s",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "soap_o": {
+          "name": "soap_o",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "soap_a": {
+          "name": "soap_a",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "soap_p": {
+          "name": "soap_p",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {
+        "visits_patient_date_idx": {
+          "name": "visits_patient_date_idx",
+          "columns": [
+            {
+              "expression": "patient_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "date",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "visits_patient_id_patients_id_fk": {
+          "name": "visits_patient_id_patients_id_fk",
+          "tableFrom": "visits",
+          "tableTo": "patients",
+          "columnsFrom": [
+            "patient_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {
+        "visits_cancel_consistent": {
+          "name": "visits_cancel_consistent",
+          "value": "(\"visits\".\"cancelled_at\" is null and \"visits\".\"cancelled_by\" is null and \"visits\".\"cancel_reason\" is null)\n     or (\"visits\".\"cancelled_at\" is not null and \"visits\".\"cancelled_by\" is not null and nullif(btrim(\"visits\".\"cancel_reason\"), '') is not null)"
+        },
+        "visits_med_rec": {
+          "name": "visits_med_rec",
+          "value": "jsonb_typeof(\"visits\".\"med_rec\") = 'array' and jsonb_array_length(\"visits\".\"med_rec\") > 0"
+        },
+        "visits_adherence_methods": {
+          "name": "visits_adherence_methods",
+          "value": "\"visits\".\"adherence_methods\" <@ array['pill_count', 'interview', 'leftover_check', 'mmas8']::text[]"
+        },
+        "visits_sbp": {
+          "name": "visits_sbp",
+          "value": "\"visits\".\"sbp\" between 50 and 300"
+        },
+        "visits_dbp": {
+          "name": "visits_dbp",
+          "value": "\"visits\".\"dbp\" between 30 and 200"
+        },
+        "visits_fbs": {
+          "name": "visits_fbs",
+          "value": "\"visits\".\"fbs\" between 20 and 800"
+        },
+        "visits_a1c": {
+          "name": "visits_a1c",
+          "value": "\"visits\".\"a1c\" between 3 and 20"
+        },
+        "visits_ldl": {
+          "name": "visits_ldl",
+          "value": "\"visits\".\"ldl\" between 10 and 500"
+        },
+        "visits_scr": {
+          "name": "visits_scr",
+          "value": "\"visits\".\"scr\" between 0.1 and 20"
+        },
+        "visits_adherence": {
+          "name": "visits_adherence",
+          "value": "\"visits\".\"adherence_pct\" between 0 and 120"
+        }
+      },
+      "isRLSEnabled": false
+    }
+  },
+  "enums": {},
+  "schemas": {},
+  "sequences": {},
+  "roles": {},
+  "policies": {},
+  "views": {},
+  "_meta": {
+    "columns": {},
+    "schemas": {},
+    "tables": {}
+  }
+}

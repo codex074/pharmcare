@@ -53,6 +53,7 @@ beforeAll(async () => {
 })
 
 afterAll(async () => {
+  await root`delete from export_log where actor_id in (${A.id}, ${B.id})`
   if (created.length) {
     await root.begin(async (tx) => {
       await tx`delete from audit_log where patient_id = any(${created})`
@@ -75,6 +76,19 @@ describe('privileges of pharmcare_app', () => {
       app`insert into audit_log (table_name, record_id, action, actor_id, actor_name, diff)
           values ('patients', ${randomUUID()}, 'insert', ${A.id}, 'x', '{}')`,
     ).rejects.toThrow(/permission denied/)
+  })
+
+  it('can log exports only through log_export(), stamped with the actor', async () => {
+    await expect(
+      app`insert into export_log (table_name, row_count, actor_id, actor_name) values ('visits', 1, ${A.id}, 'x')`,
+    ).rejects.toThrow(/permission denied/)
+    await expect(app`select log_export('visits', 1)`).rejects.toThrow(/app.user_id is not set/)
+    const [row] = await as(A, async (tx) => {
+      await tx`select log_export('visits', 7, ${tx.json({ period: '7' })})`
+      return tx`select actor_id, actor_name, row_count from export_log order by id desc limit 1`
+    })
+    expect(row).toMatchObject({ actor_id: A.id, actor_name: A.name, row_count: 7 })
+    await expect(app`delete from export_log where false`).rejects.toThrow(/permission denied/)
   })
 
   it('can purge old login attempts only through the definer function', async () => {

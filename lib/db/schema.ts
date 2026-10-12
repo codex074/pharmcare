@@ -5,6 +5,7 @@ import {
   check,
   date,
   index,
+  integer,
   jsonb,
   numeric,
   pgTable,
@@ -288,6 +289,22 @@ export const auditLog = pgTable(
     index('audit_log_at_idx').on(t.at),
     check('audit_log_action', sql`${t.action} in ('insert', 'update', 'cancel')`),
   ],
+)
+
+// Who exported which table and how many rows. Written only through the
+// SECURITY DEFINER function log_export(); pharmcare_app: SELECT.
+export const exportLog = pgTable(
+  'export_log',
+  {
+    id: bigint('id', { mode: 'number' }).primaryKey().generatedAlwaysAsIdentity(),
+    tableName: text('table_name').notNull(),
+    rowCount: integer('row_count').notNull(),
+    filters: jsonb('filters').notNull().default(sql`'{}'::jsonb`),
+    actorId: uuid('actor_id').notNull(),
+    actorName: text('actor_name').notNull(),
+    at: timestamp('at', { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [index('export_log_at_idx').on(t.at)],
 )
 
 // Failed logins only. pharmcare_app: SELECT, INSERT, plus EXECUTE on purge_login_attempts().
