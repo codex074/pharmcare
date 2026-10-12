@@ -93,5 +93,5 @@ Mac อยู่นอก รพ. → เรียก relay ผ่าน Cloudfl
 - 2026-10-12: ขั้น 8 (เตรียม) บน Mac — ผู้ใช้เลือกวาง DB production บน CT 103 (ตาม CLAUDE.md), เขียน `deploy/PLAN.md` ใหม่ (gitignore) พร้อม `roles.sql`, compose (`web` / `pharmcare-web` บน network `deploy_default`), override พอร์ต 3100 สำหรับ VPS, nginx site, `ship-image.sh` (build amd64 บน Mac แล้ว `docker load`), แพตช์ `failover.sh` ของ PharmShift (สตาร์ต pharmcare-web หลัง promote + สลับ DNS `pharmcare.codex074.com` แบบไม่บล็อก PharmShift)
   - แก้ `Dockerfile`: ใช้ Node 24.13.1 (npm 11 ตรงกับ lockfile — npm 10 ใน Node 22 อ่าน lockfile ไม่ผ่าน), เพิ่ม stage `migrate` (รัน drizzle-kit ใน network ของเซิร์ฟเวอร์), `HOSTNAME=0.0.0.0` (ไม่งั้น healthcheck 127.0.0.1 ไม่ผ่าน) · ล้างรายการ esbuild ค้างใน `package-lock.json` · eslint ข้าม `deploy/`
   - ทดสอบ: image migrate บน DB เปล่าผ่าน, container healthy, `/api/health` 200 · lint/typecheck/test(105)/build ผ่าน
-  - ข้อสังเกต: CLAUDE.md กำหนดให้ mutation ตรวจ header `Origin` แต่ยังไม่พบโค้ดตรวจ (Server Actions ของ Next ตรวจเองอยู่แล้ว ส่วน route `/api/auth/login` ยังไม่ตรวจ) — ควรเพิ่มก่อน/หลังขึ้นจริง
+  - ตรวจแล้ว: การแก้ไขข้อมูลทุกจุด (รวม login) เป็น Server Action ซึ่ง Next ตรวจ `Origin` เทียบ host ให้เอง, pool DB 6+2 = 8 ไม่เกิน `CONNECTION LIMIT 10`
 
